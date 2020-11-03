@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using agap2IT.Labs.BlockBase.BBLinq.Properties;
+using Newtonsoft.Json;
 
-namespace BBLinq.Helper
+namespace agap2IT.Labs.BlockBase.BBLinq.Helper
 {
     public static class HttpHelper
     {
@@ -14,47 +15,40 @@ namespace BBLinq.Helper
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method;
-            request.ContentType = "application/json";
-
+            request.ContentType = Resources.REQUEST_CONTENT_TYPE;
             return request;
         }
 
         public static async Task<string> CallWebRequest(HttpWebRequest httpWebRequest, object jsonBody)
         {
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            await using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
                 var json = JsonConvert.SerializeObject(jsonBody);
 
                 await streamWriter.WriteAsync(json);
             }
-
             var response = (HttpWebResponse)httpWebRequest.GetResponse();
-
-            return new StreamReader(response.GetResponseStream()).ReadToEnd();
+            return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 
-        public static async Task<string> CallWebRequestNoSSLVerification(HttpWebRequest httpWebRequest, object jsonBody)
+        public static async Task<string> CallWebRequestNoSslVerification(HttpWebRequest httpWebRequest, object jsonBody)
         {
             httpWebRequest.ServerCertificateValidationCallback = delegate { return true; };
 
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            await using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
                 var json = JsonConvert.SerializeObject(jsonBody);
 
                 await streamWriter.WriteAsync(json);
             }
-
             var response = (HttpWebResponse)httpWebRequest.GetResponse();
-
-            return new StreamReader(response.GetResponseStream()).ReadToEnd();
+            return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 
-        public static async Task<string> CallWebRequestNoSSLVerification(HttpWebRequest httpWebRequest)
+        public static async Task<string> CallWebRequestNoSslVerification(HttpWebRequest httpWebRequest)
         {
             httpWebRequest.ServerCertificateValidationCallback = delegate { return true; };
-
             var response = (HttpWebResponse)httpWebRequest.GetResponse();
-
             return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 
@@ -62,9 +56,7 @@ namespace BBLinq.Helper
         public static async Task<string> CallWebRequest(HttpWebRequest httpWebRequest)
         {
             httpWebRequest.ServerCertificateValidationCallback = delegate { return true; };
-
             var response = (HttpWebResponse)httpWebRequest.GetResponse();
-
             return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 

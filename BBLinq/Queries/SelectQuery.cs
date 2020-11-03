@@ -1,18 +1,17 @@
-﻿using BBLinq.ExtensionMethods;
-using BBLinq.Parser;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using agap2IT.Labs.BlockBase.BBLinq.Parser;
 
-namespace BBLinq.Queries
+namespace agap2IT.Labs.BlockBase.BBLinq.Queries
 {
    
     public class SelectQuery<T>
     {
         public Type Origin { get; }
         public IEnumerable<LambdaExpression> Joins { get; }
-        private LambdaExpression Where { get; }
-        private LambdaExpression Select { get; }
+        public LambdaExpression Where { get; }
+        public LambdaExpression Select { get; }
 
         public SelectQuery(Type origin, IEnumerable<LambdaExpression> joins, LambdaExpression where, LambdaExpression select)
         {
@@ -24,10 +23,7 @@ namespace BBLinq.Queries
 
         public override string ToString()
         {
-            var select = (Select == null) ? QueryParser.SelectWhole<T>() : QueryParser.ParseSelect(Select);
-            var from = QueryParser.From(Origin) + (Joins.IsNullOrEmpty() ?  "" : QueryParser.ParseJoins(Joins));
-            var where = (Where != null) ? " " +QueryParser.ParseFilter(Where):"";
-            return $"{select} {from}{where}{QueryParser.End()}";
+            return QueryParser.ParseSelectRecordsQuery(this);
         }
     }
 }

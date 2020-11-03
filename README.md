@@ -1,2 +1,2 @@
-# bblinq
-Nuget to build C# applications with BlockBase databases
+# BBLinq
+Implementation of a C# / BlockBase database ORM available as a Nuget.

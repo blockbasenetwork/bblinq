@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BBLinq.POCO
+namespace agap2IT.Labs.BlockBase.BBLinq.Poco
 {
     public class ResponseString
     {

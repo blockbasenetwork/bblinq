@@ -1,17 +1,21 @@
-﻿namespace BBLinq.Queries
+﻿using System.Linq.Expressions;
+using agap2IT.Labs.BlockBase.BBLinq.Parser;
+
+namespace agap2IT.Labs.BlockBase.BBLinq.Queries
 {
     public class UpdateQuery<T>
     {
-        private T _record;
-
-        public UpdateQuery(T record)
+        public T Record { get; }
+        public LambdaExpression Where { get; }
+        public UpdateQuery(T record, LambdaExpression where)
         {
-            _record = record;
+            Record = record;
+            Where = where;
         }
         
         public override string ToString()
         {
-            return string.Empty;
+            return QueryParser.ParseUpdateRecordQuery<T>(this);
         }
     }
 }

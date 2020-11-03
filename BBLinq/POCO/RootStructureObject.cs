@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace BBLinq.POCO
+namespace agap2IT.Labs.BlockBase.BBLinq.Poco
 {
     public class RootStructureObject
     {
-        public bool succeeded { get; set; }
-        public object exception { get; set; }
-        public List<StructureResponse> response { get; set; }
-        public object responseMessage { get; set; }
+        public bool Succeeded { get; set; }
+        public object Exception { get; set; }
+        public List<StructureResponse> Response { get; set; }
+        public object ResponseMessage { get; set; }
     }
 }

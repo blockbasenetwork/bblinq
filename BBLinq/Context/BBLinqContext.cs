@@ -1,25 +1,37 @@
-﻿using BBLinq.Data;
-using System;
+﻿using System;
 using System.Linq;
+using agap2IT.Labs.BlockBase.BBLinq.Sets;
 
-namespace BBLinq.Context
+namespace agap2IT.Labs.BlockBase.BBLinq.Context
 {
-    public abstract class BBContext : IDisposable
+    /// <summary>
+    /// The original BlockBase context
+    /// </summary>
+    public abstract class BbContext : IDisposable
     {
-        public BBContext(string node, string databaseName)
+        /// <summary>
+        /// Default constructor that sets up the executor and sets a default value for each set
+        /// </summary>
+        /// <param name="node">the node to be used</param>
+        /// <param name="databaseName">the database to be used</param>
+        protected BbContext(string node, string databaseName)
         {
-            var executor = new BBLinqExecutor(node, databaseName);
+            var executor = new BbLinqExecutor(node, databaseName);
             GlobalContext.Instance.Executor = executor;
-            var bbSets = GetType().GetProperties().Where(x => x.PropertyType.BaseType == typeof(BBSet));
+            var bbSets = GetType().GetProperties().Where(x => x.PropertyType.BaseType == typeof(BbSet));
             foreach (var prop in bbSets)
             {
                 prop.SetValue(this, Activator.CreateInstance(prop.PropertyType));
             }
         }
 
+        /// <summary>
+        /// Clears the context so that the executor is only available when needed
+        /// </summary>
         public void Dispose()
         {
             GlobalContext.Instance.Clear();
         }
+
     }
 }

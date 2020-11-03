@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace BBLinq.POCO
+namespace agap2IT.Labs.BlockBase.BBLinq.Poco
 {
     public class Table
     {

@@ -1,17 +1,18 @@
-﻿using BBLinq.Parser;
+﻿using agap2IT.Labs.BlockBase.BBLinq.Parser;
 
-namespace BBLinq.Queries
+namespace agap2IT.Labs.BlockBase.BBLinq.Queries
 {
     public class InsertQuery<T>
     {
-        private T _record;
+
+        public T Record { get; }
         public InsertQuery(T record)
         {
-            _record = record;
+            Record = record;
         }
         public override string ToString()
         {
-            return QueryParser.ParseInsert(_record);
+            return QueryParser.ParseInsertRecordQuery(this);
         }
     }
 }

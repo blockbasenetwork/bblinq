@@ -1,9 +1,8 @@
-﻿using BBLinq.POCO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using agap2IT.Labs.BlockBase.BBLinq.Poco;
 
-namespace BBLinq.Parser
+namespace agap2IT.Labs.BlockBase.BBLinq.Parser
 {
     public class ResultParser
     {

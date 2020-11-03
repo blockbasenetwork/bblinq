@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace BBLinq.POCO
+namespace agap2IT.Labs.BlockBase.BBLinq.Poco
 {
     public class StructureResponse
     {
-        public List<Table> tables { get; set; }
-        public string name { get; set; }
+        public List<Table> Tables { get; set; }
+        public string Name { get; set; }
 
     }
 }

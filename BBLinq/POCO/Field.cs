@@ -1,9 +1,9 @@
-﻿namespace BBLinq.POCO
+﻿namespace agap2IT.Labs.BlockBase.BBLinq.Poco
 {
     public class Field
     {
-        public string name { get; set; }
-        public string type { get; set; }
-        public object data { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public object Data { get; set; }
     }
 }

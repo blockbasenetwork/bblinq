@@ -1,27 +1,27 @@
-﻿using BBLinq.Context;
-using BBLinq.Interfaces;
-using BBLinq.Parser;
-using BBLinq.Queries;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using agap2IT.Labs.BlockBase.BBLinq.Context;
+using agap2IT.Labs.BlockBase.BBLinq.Interfaces;
+using agap2IT.Labs.BlockBase.BBLinq.Parser;
+using agap2IT.Labs.BlockBase.BBLinq.Queries;
 
-namespace BBLinq.Data
+namespace agap2IT.Labs.BlockBase.BBLinq.Sets
 {
-    public abstract class BBSet{}
-    public class BBSet<T> : BBSet, IBBSet<T> where T:class
+    public abstract class BbSet{}
+    public class BbSet<T> : BbSet, IBbSet<T> where T:class
     {
         private Expression<Func<T, bool>> _filter;
 
-        public IBBJoinSet<T, TB> Join<TB>(Expression<Func<T, TB, bool>> on)
+        public IBbJoinSet<T, TB> Join<TB>(Expression<Func<T, TB, bool>> on)
         {
-            return new BBJoinSet<T, TB>(on);
+            return new BbJoinSet<T, TB>(on);
         }
 
-        public async Task DeleteAsync(T item)
+        public async Task DeleteAsync(Expression<Func<T, bool>> where)
         {
-            var query = new DeleteQuery<T>(item);
+            var query = new DeleteQuery<T>(where);
             await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
         }
 
@@ -48,11 +48,11 @@ namespace BBLinq.Data
 
         public async Task UpdateAsync(T item)
         {
-            var query = new UpdateQuery<T>(item);
+            var query = new UpdateQuery<T>(item, _filter);
             await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
         }
 
-        public IBBSet<T> Where(Expression<Func<T, bool>> filter)
+        public IBbSet<T> Where(Expression<Func<T, bool>> filter)
         {
             _filter = filter;
             return this;
