@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using agap2IT.Labs.BlockBase.BBLinq.Helper;
-using agap2IT.Labs.BlockBase.BBLinq.Poco;
 using agap2IT.Labs.BlockBase.BBLinq.Properties;
 
 namespace agap2IT.Labs.BlockBase.BBLinq.Context
@@ -20,12 +18,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Context
         /// Performs a query request to the node and expects the database's structure as a root structure
         /// </summary>
         /// <returns>the database's structure as a root structure</returns>
-        internal async Task<RootStructureObject> GetStructureAsync()
+        internal async Task<string> GetStructureAsync()
         {
             var request = HttpHelper.ComposeWebRequestGet($"{_node}{Resources.PATH_GET_STRUCTURE}");
             var json = await HttpHelper.CallWebRequestNoSslVerification(request);
-            var items = JsonConvert.DeserializeObject<RootStructureObject>(json);
-            return items;
+            return json;
         }
 
         /// <summary>
@@ -33,13 +30,12 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Context
         /// </summary>
         /// <param name="bodyQuery">the query to execute</param>
         /// <returns>a root result</returns>
-        internal async Task<RootObject> ExecuteQueryAsync(string bodyQuery)
+        internal async Task<string> ExecuteQueryAsync(string bodyQuery)
         {
-            bodyQuery = $"{Resources.QUERY_USE} {_databaseName};\n{bodyQuery}";
+            bodyQuery = $"{SQLExpressions.USE} {_databaseName};\n{bodyQuery}";
             var request = HttpHelper.ComposeWebRequestPost($"{_node}{Resources.PATH_EXECUTE_QUERY}");
             var json = await HttpHelper.CallWebRequestNoSslVerification(request, bodyQuery);
-            var responseObject = JsonConvert.DeserializeObject<RootObject>(json);
-            return responseObject;
+            return json;
         }
 
         /// <summary>

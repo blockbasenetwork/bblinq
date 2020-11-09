@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using agap2IT.Labs.BlockBase.BBLinq.Context;
+using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
 using agap2IT.Labs.BlockBase.BBLinq.Interfaces;
 using agap2IT.Labs.BlockBase.BBLinq.Parser;
+using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
 using agap2IT.Labs.BlockBase.BBLinq.Queries;
 
 namespace agap2IT.Labs.BlockBase.BBLinq.Sets
@@ -26,9 +28,13 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
 
         public async Task<IEnumerable<TC>> SelectAsync<TC>(Expression<Func<TA, TB, TC>> mapper)
         {
+
             var query = new SelectQuery<TC>(typeof(TA), new[] { _on }, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TC>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TC).IsDynamic() && typeof(TC) == query.Origin)
+                return await ResultParser.ParseResult<TC>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TC>(result, properties, typeof(TC));
         }
 
         public IBbJoinSet<TA, TB> Where(Expression<Func<TA, TB, bool>> filter)
@@ -56,8 +62,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TD>> SelectAsync<TD>(Expression<Func<TA, TB, TC, TD>> mapper)
         {
             var query = new SelectQuery<TD>(typeof(TA), _joins, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TD>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TD).IsDynamic() && typeof(TD) == query.Origin)
+                return await ResultParser.ParseResult<TD>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TD>(result, properties, typeof(TD));
         }
 
         public IBbJoinSet<TA, TB, TC> Where(Expression<Func<TA, TB, TC, bool>> filter)
@@ -88,8 +97,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TE>> SelectAsync<TE>(Expression<Func<TA, TB, TC, TD, TE>> mapper)
         {
             var query = new SelectQuery<TD>(typeof(TA), _joins, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TE>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TE).IsDynamic() && typeof(TE) == query.Origin)
+                return await ResultParser.ParseResult<TE>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TE>(result, properties, typeof(TE));
         }
 
         public IBbJoinSet<TA, TB, TC, TD> Where(Expression<Func<TA, TB, TC, TD, bool>> filter)
@@ -120,8 +132,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TF>> SelectAsync<TF>(Expression<Func<TA, TB, TC, TD, TE, TF>> mapper)
         {
             var query = new SelectQuery<TD>(typeof(TA), _joins, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TF>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TF).IsDynamic() && typeof(TF) == query.Origin)
+                return await ResultParser.ParseResult<TF>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TF>(result, properties, typeof(TF));
         }
 
         public IBbJoinSet<TA, TB, TC, TD, TE> Where(Expression<Func<TA, TB, TC, TD, TE, bool>> filter)
@@ -152,8 +167,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TG>> SelectAsync<TG>(Expression<Func<TA, TB, TC, TD, TE, TF, TG>> mapper)
         {
             var query = new SelectQuery<TD>(typeof(TA), _joins, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TG>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TG).IsDynamic() && typeof(TG) == query.Origin)
+                return await ResultParser.ParseResult<TG>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TG>(result, properties, typeof(TG));
         }
 
         public IBbJoinSet<TA, TB, TC, TD, TE, TF> Where(Expression<Func<TA, TB, TC, TD, TE, TF, bool>> filter)
@@ -179,8 +197,11 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TH>> SelectAsync<TH>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH>> mapper)
         {
             var query = new SelectQuery<TD>(typeof(TA), _joins, _filter, mapper);
-            var result = await GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
-            return ResultParser.ParseRoot<TH>(result);
+            var result = GlobalContext.Instance.Executor.ExecuteQueryAsync(query.ToString());
+            if (!typeof(TH).IsDynamic() && typeof(TH) == query.Origin)
+                return await ResultParser.ParseResult<TH>(result);
+            var properties = ExpressionParser.ParseSelectBody(mapper.Body);
+            return await ResultParser.ParseResult<TH>(result, properties, typeof(TH));
         }
 
         public IBbJoinSet<TA, TB, TC, TD, TE, TF, TG> Where(Expression<Func<TA, TB, TC, TD, TE, TF, TG, bool>> filter)

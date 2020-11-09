@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using agap2IT.Labs.BlockBase.BBLinq.Enums;
-using agap2IT.Labs.BlockBase.BBLinq.Properties;
+using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
 
 namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
 {
@@ -13,28 +11,39 @@ namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
     /// </summary>
     internal static class ExpressionExtensionMethods
     {
-        /// <summary>
-        /// Fetches the parameters and respective types for a Lambda expression
-        /// </summary>
-        /// <param name="expression">a lambda expression</param>
-        /// <returns>a list of name, type tuples </returns>
-        internal static Dictionary<string, Type> GetParameterDictionary(this LambdaExpression expression)
-        {
-            var parameters = (expression.Parameters);
-            return parameters.ToDictionary(param => @param.Name, param => param.Type);
-        }
 
+        #region Binary Expressions
         /// <summary>
-        /// Returns a Debug string from an expression
+        /// Categorizes the binary expression type
         /// </summary>
         /// <param name="expression">the expression</param>
-        /// <returns>a debug string</returns>
-        internal static string GetDebugString(this Expression expression)
+        /// <returns>a binary expression type</returns>
+        internal static BinaryExpressionCategory GetExpressionType(this BinaryExpression expression)
         {
-            var propertyInfo = typeof(Expression).GetProperty("DebugView", BindingFlags.Instance | BindingFlags.NonPublic);
-            return propertyInfo?.GetValue(expression) as string;
+            switch (expression.NodeType)
+            {
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                    return BinaryExpressionCategory.And;
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                    return BinaryExpressionCategory.Or;
+                case ExpressionType.Equal:
+                case ExpressionType.LessThan:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.NotEqual:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.GreaterThanOrEqual:
+                    return BinaryExpressionCategory.Comparison;
+                default:
+                    return BinaryExpressionCategory.None;
+            }
         }
 
+
+        #endregion
+
+        #region Expressions
         /// <summary>
         /// Returns an internal expression
         /// </summary>
@@ -58,42 +67,128 @@ namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
         }
 
         /// <summary>
-        /// Returns a constant expression value
+        /// Retrieves a list of (table, field) names
         /// </summary>
-        /// <param name="expression">the expression</param>
-        /// <returns>the expression value</returns>
-        internal static object GetValue(this MemberExpression expression)
+        /// <param name="expression">an expression for a new object</param>
+        /// <returns>a list of table,field name pairings</returns>
+        internal static IEnumerable<TableField> GetTableAndFieldsPairings(this NewExpression expression)
         {
-            var valueProp = (expression.GetExpression() as ConstantExpression)?.Value;
-            var value = (expression.Member as FieldInfo)?.GetValue(valueProp);
-            return value is string ? $"{Resources.QUERY_TEXT_WRAPPER_LEFT}{value}{Resources.QUERY_TEXT_WRAPPER_RIGHT}" : value;
+            var arguments = expression.Arguments;
+            var result = new List<TableField>();
+            foreach (var argument in arguments)
+            {
+                var exp = argument.GetExpression();
+                var member = argument.GetMember();
+                if (exp == null || member == null)
+                {
+                    continue;
+                }
+                var table = exp.Type.GetTableName();
+                var field = member.GetFieldName();
+                result.Add(new TableField() { TableName = table, FieldName = field });
+            }
+            return result;
         }
 
         /// <summary>
-        /// Categorizes the binary expression type
+        /// Retrieves a list of (table, field) names
         /// </summary>
-        /// <param name="expression">the expression</param>
-        /// <returns>a binary expression type</returns>
-        internal static BinaryExpressionCategoryEnum GetExpressionType(this BinaryExpression expression)
+        /// <param name="expression">an expression for a object initializer</param>
+        /// <returns>a list of table,field name pairings</returns>
+        internal static IEnumerable<TableField> GetTablesAndFieldsPairings(this MemberInitExpression expression)
         {
-            switch(expression.NodeType)
+            var bindings = expression.Bindings;
+            var result = new List<TableField>();
+            foreach (var binding in bindings)
             {
-                case ExpressionType.And:
-                case ExpressionType.AndAlso:
-                    return BinaryExpressionCategoryEnum.And;
-                case ExpressionType.Or:
-                case ExpressionType.OrElse:
-                    return BinaryExpressionCategoryEnum.Or;
-                case ExpressionType.Equal:
-                case ExpressionType.LessThan:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.NotEqual:
-                case ExpressionType.LessThanOrEqual:
-                case ExpressionType.GreaterThanOrEqual:
-                    return BinaryExpressionCategoryEnum.Comparison;
-                default:
-                    return BinaryExpressionCategoryEnum.None;
+                if (!(binding is MemberAssignment assignment)) continue;
+                var member = assignment.Expression;
+                var table = member.GetExpression().Type.GetTableName();
+                var field = member.GetMember().GetFieldName();
+                result.Add(new TableField() {TableName = table, FieldName = field});
             }
+            return result;
         }
+
+        /// <summary>
+        /// Retrieves a list of (table, field) names
+        /// </summary>
+        /// <param name="expression">an expression for a new object</param>
+        /// <returns>a list of table,field name pairings</returns>
+        internal static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this NewExpression expression)
+        {
+            var arguments = expression.Arguments;
+            var members = expression.Members;
+            var result = new List<PropertyFieldAssignment>();
+            for (var counter = 0; counter < arguments.Count; counter++)
+            {
+                var exp = arguments[counter].GetExpression();
+                var member = arguments[counter].GetMember();
+                if (exp == null || member == null)
+                {
+                    continue;
+                }
+                var table = exp.Type.GetTableName();
+                var field = member.GetFieldName();
+                var property = (PropertyInfo)members[counter];
+                result.Add(new PropertyFieldAssignment() { TableName = table, FieldName = field, Property = property });
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves a list of (table, field) names
+        /// </summary>
+        /// <param name="expression">an expression for a object initializer</param>
+        /// <returns>a list of table,field name pairings</returns>
+        internal static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this MemberInitExpression expression)
+        {
+            var bindings = expression.Bindings;
+            var result = new List<PropertyFieldAssignment>();
+            for (var counter = 0; counter < bindings.Count; counter++)
+            {
+                if (!(bindings[counter] is MemberAssignment assignment)) continue;
+                var member = assignment.Expression;
+                var table = member.GetExpression().Type.GetTableName();
+                var field = member.GetMember().GetFieldName();
+                var property = (PropertyInfo)bindings[counter].Member;
+                //var property = members[counter].Name;
+                result.Add(new PropertyFieldAssignment() { TableName = table, FieldName = field, Property = property });
+            }
+            return result;
+        }
+
+        internal static bool IsConstantMemberAccess(this MemberExpression expression)
+        {
+            var innerExpression = expression.Expression;
+            return innerExpression != null && innerExpression.NodeType == ExpressionType.Constant;
+        }
+
+        internal static bool IsPropertyMemberAccess(this MemberExpression expression)
+        {
+            var innerExpression = expression.Expression;
+            return innerExpression != null && innerExpression.NodeType == ExpressionType.Parameter;
+        }
+
+        internal static bool IsOperator(this Expression expression)
+        {
+            var operators = new ExpressionType[]
+            {
+                ExpressionType.Add,
+                ExpressionType.Subtract,
+                ExpressionType.Multiply,
+                ExpressionType.Divide
+            };
+           foreach (var @operator in operators)
+           {
+               if (expression.NodeType == @operator)
+               {
+                   return true;
+               }
+           }
+
+           return false;
+        }
+        #endregion
     }
 }

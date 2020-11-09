@@ -3,7 +3,7 @@
     /// <summary>
     /// Category for a binary expression
     /// </summary>
-    public enum BinaryExpressionCategoryEnum
+    public enum BinaryExpressionCategory
     {
         None,
         And,

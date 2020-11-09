@@ -117,16 +117,91 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="PATH_EXECUTE_QUERY" xml:space="preserve">
-    <value>/api/Requester/ExecuteQuery</value>
+  <data name="ALL_SELECTOR" xml:space="preserve">
+    <value>*</value>
   </data>
-  <data name="PATH_EXECUTE_QUERY_TO_CONTENT" xml:space="preserve">
-    <value>/api/Requester/ExecuteQuery</value>
+  <data name="AND" xml:space="preserve">
+    <value>AND</value>
   </data>
-  <data name="PATH_GET_STRUCTURE" xml:space="preserve">
-    <value>api/Requester/GetStructure</value>
+  <data name="DELETE" xml:space="preserve">
+    <value>DELETE</value>
   </data>
-  <data name="REQUEST_CONTENT_TYPE" xml:space="preserve">
-    <value>application/json</value>
+  <data name="DIFFERENT" xml:space="preserve">
+    <value>!=</value>
+  </data>
+  <data name="END" xml:space="preserve">
+    <value>;</value>
+  </data>
+  <data name="EQUAL_OR_GREATER" xml:space="preserve">
+    <value>&gt;=</value>
+  </data>
+  <data name="EQUAL_OR_LESS" xml:space="preserve">
+    <value>&lt;=</value>
+  </data>
+  <data name="FIELD_OR_VALUE_SEPARATOR" xml:space="preserve">
+    <value>,</value>
+  </data>
+  <data name="FROM" xml:space="preserve">
+    <value>FROM</value>
+  </data>
+  <data name="GREATER_THAN" xml:space="preserve">
+    <value>&gt;</value>
+  </data>
+  <data name="INSERT" xml:space="preserve">
+    <value>INSERT</value>
+  </data>
+  <data name="INTO" xml:space="preserve">
+    <value>INTO</value>
+  </data>
+  <data name="JOIN" xml:space="preserve">
+    <value>JOIN</value>
+  </data>
+  <data name="LEFT_LIST_WRAPPER" xml:space="preserve">
+    <value>(</value>
+  </data>
+  <data name="LEFT_TEXT_WRAPPER" xml:space="preserve">
+    <value>'</value>
+  </data>
+  <data name="LESS_THAN" xml:space="preserve">
+    <value>&lt;</value>
+  </data>
+  <data name="ON" xml:space="preserve">
+    <value>ON</value>
+  </data>
+  <data name="OR" xml:space="preserve">
+    <value>OR</value>
+  </data>
+  <data name="RIGHT_LIST_WRAPPER" xml:space="preserve">
+    <value>)</value>
+  </data>
+  <data name="RIGHT_TEXT_WRAPPER" xml:space="preserve">
+    <value>'</value>
+  </data>
+  <data name="SELECT" xml:space="preserve">
+    <value>SELECT</value>
+  </data>
+  <data name="SET" xml:space="preserve">
+    <value>SET</value>
+  </data>
+  <data name="TABLE_FIELD_SEPARATOR" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="UPDATE" xml:space="preserve">
+    <value>UPDATE</value>
+  </data>
+  <data name="USE" xml:space="preserve">
+    <value>USE</value>
+  </data>
+  <data name="VALUES" xml:space="preserve">
+    <value>VALUES</value>
+  </data>
+  <data name="VALUE_EQUALS" xml:space="preserve">
+    <value>=</value>
+  </data>
+  <data name="WHERE" xml:space="preserve">
+    <value>WHERE</value>
+  </data>
+  <data name="WHITE_SPACE" xml:space="preserve">
+    <value> </value>
   </data>
 </root>
