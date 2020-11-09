@@ -7,8 +7,10 @@
     <Version>0.0.1</Version>
     <Description>A C#-BBSQL ORM used for database operations on BlockBase</Description>
     <Copyright />
-    <PackageLicenseExpression>GPL</PackageLicenseExpression>
+    <PackageLicenseExpression></PackageLicenseExpression>
     <PackageId>BlockBase.BBLinq</PackageId>
+    <Authors>BlockBase</Authors>
+    <Company>BlockBase</Company>
   </PropertyGroup>
 
   <ItemGroup>

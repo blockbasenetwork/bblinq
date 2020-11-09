@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBLinq", "BBLinq\BBLinq.csproj", "{990D156D-AEE7-4DAD-955E-82F9AA8BB861}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockBase.BBLinq", "BlockBase.BBLinq\BlockBase.BBLinq.csproj", "{990D156D-AEE7-4DAD-955E-82F9AA8BB861}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayApp", "RailwayApp\RailwayApp.csproj", "{84757D26-D8FC-4729-B515-1D47B7918AFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RailwayApp", "RailwayApp\RailwayApp.csproj", "{84757D26-D8FC-4729-B515-1D47B7918AFE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{37D3C9CE-B4C9-4792-9648-A8C816BAAB58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{49A4A7F2-8D51-4F05-8634-302CC6D3170A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{49A4A7F2-8D51-4F05-8634-302CC6D3170A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{6091A778-A5F2-4BBC-BE77-E67BB8EC5D05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{6091A778-A5F2-4BBC-BE77-E67BB8EC5D05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{6AAC2E59-42A9-4294-861D-00069CC3264E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{6AAC2E59-42A9-4294-861D-00069CC3264E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{33F4993A-895A-498B-9BF8-F572BB49807A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{33F4993A-895A-498B-9BF8-F572BB49807A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

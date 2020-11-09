@@ -47,7 +47,6 @@ namespace BlockBase.BBLinq.Parser
         {
             var result = await queryResult;
             var parseResult = JsonConvert.DeserializeObject<Result>(result);
-            var tableName = typeof(TR).GetTableName();
             var fieldNames = new Dictionary<string, PropertyInfo>();
             foreach (var property in properties)
             {
