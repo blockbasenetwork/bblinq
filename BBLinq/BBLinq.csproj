@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>agap2IT.Labs.BlockBase.BBLinq</RootNamespace>
+    <RootNamespace>BlockBase.BBLinq</RootNamespace>
+    <Version>0.0.1</Version>
+    <Description>A C#-BBSQL ORM used for database operations on BlockBase</Description>
+    <Copyright />
+    <PackageLicenseExpression>GPL</PackageLicenseExpression>
+    <PackageId>BlockBase.BBLinq</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Results;
-using agap2IT.Labs.BlockBase.BBLinq.Properties;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Pocos.Results;
+using BlockBase.BBLinq.Properties;
 using Newtonsoft.Json;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Parser
+namespace BlockBase.BBLinq.Parser
 {
     public class ResultParser
     {

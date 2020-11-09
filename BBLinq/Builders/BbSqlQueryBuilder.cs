@@ -1,7 +1,7 @@
-﻿using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
-using agap2IT.Labs.BlockBase.BBLinq.Properties;
+﻿using BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Properties;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Builders
+namespace BlockBase.BBLinq.Builders
 {
     /// <summary>
     /// A query builder for BBSQL queries

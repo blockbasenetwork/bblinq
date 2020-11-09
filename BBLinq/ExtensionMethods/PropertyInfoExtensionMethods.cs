@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using agap2IT.Labs.BlockBase.BBLinq.DataAnnotations;
+using BlockBase.BBLinq.DataAnnotations;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
+namespace BlockBase.BBLinq.ExtensionMethods
 {
     /// <summary>
     /// Extension methods for Properties its derivatives

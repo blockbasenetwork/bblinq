@@ -1,8 +1,8 @@
-﻿using agap2IT.Labs.BlockBase.BBLinq.Builders;
-using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
-using agap2IT.Labs.BlockBase.BBLinq.Parser;
+﻿using BlockBase.BBLinq.Builders;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Parser;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Queries
+namespace BlockBase.BBLinq.Queries
 {
     public class InsertQuery<T>
     {

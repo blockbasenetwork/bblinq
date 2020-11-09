@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using agap2IT.Labs.BlockBase.BBLinq.Sets;
+using BlockBase.BBLinq.Sets;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Context
+namespace BlockBase.BBLinq.Context
 {
     /// <summary>
     /// The original BlockBase context

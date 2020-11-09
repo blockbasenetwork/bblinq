@@ -1,4 +1,4 @@
-﻿namespace agap2IT.Labs.BlockBase.BBLinq.Enums
+﻿namespace BlockBase.BBLinq.Enums
 {
     /// <summary>
     /// Category for a binary expression

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using agap2IT.Labs.BlockBase.BBLinq.Enums;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Enums;
+using BlockBase.BBLinq.Pocos.Components;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
+namespace BlockBase.BBLinq.ExtensionMethods
 {
     /// <summary>
     /// Extension methods for the Expression type and its derivatives

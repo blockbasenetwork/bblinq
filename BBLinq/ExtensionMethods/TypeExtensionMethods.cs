@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using agap2IT.Labs.BlockBase.BBLinq.DataAnnotations;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.DataAnnotations;
+using BlockBase.BBLinq.Pocos.Components;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
+namespace BlockBase.BBLinq.ExtensionMethods
 {
     /// <summary>
     /// Extension methods for Types

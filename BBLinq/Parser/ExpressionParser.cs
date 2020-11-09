@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using agap2IT.Labs.BlockBase.BBLinq.Builders;
-using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Builders;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Pocos.Components;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Parser
+namespace BlockBase.BBLinq.Parser
 {
     public static class ExpressionParser
     {

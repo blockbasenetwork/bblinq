@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods
+namespace BlockBase.BBLinq.ExtensionMethods
 {
     /// <summary>
     /// Extension Methods for the Enumerable type

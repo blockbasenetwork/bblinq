@@ -4,17 +4,17 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using agap2IT.Labs.BlockBase.BBLinq.Parser;
-using agap2IT.Labs.BlockBase.BBLinq.Context;
-using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
-using agap2IT.Labs.BlockBase.BBLinq.Queries;
-using agap2IT.Labs.BlockBase.BBLinq.Interfaces;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Results;
-using agap2IT.Labs.BlockBase.BBLinq.Properties;
+using BlockBase.BBLinq.Parser;
+using BlockBase.BBLinq.Context;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Queries;
+using BlockBase.BBLinq.Interfaces;
+using BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Pocos.Results;
+using BlockBase.BBLinq.Properties;
 using Newtonsoft.Json;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Sets
+namespace BlockBase.BBLinq.Sets
 {
     public abstract class BbSet{}
     public class BbSet<T> : BbSet, IBbSet<T> where T:class

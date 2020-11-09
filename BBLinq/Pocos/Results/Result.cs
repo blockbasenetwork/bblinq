@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Pocos.Results
+namespace BlockBase.BBLinq.Pocos.Results
 {
     public class Result
     {

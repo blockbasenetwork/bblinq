@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Properties {
+namespace BlockBase.BBLinq.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace agap2IT.Labs.BlockBase.BBLinq.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("agap2IT.Labs.BlockBase.BBLinq.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlockBase.BBLinq.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

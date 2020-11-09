@@ -1,4 +1,4 @@
-﻿namespace agap2IT.Labs.BlockBase.BBLinq.Pocos.Components
+﻿namespace BlockBase.BBLinq.Pocos.Components
 {
     /// <summary>
     /// A pairing of field name and value

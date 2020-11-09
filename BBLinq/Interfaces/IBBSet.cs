@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Interfaces
+namespace BlockBase.BBLinq.Interfaces
 {
     public interface IBbSet<TA>
     {

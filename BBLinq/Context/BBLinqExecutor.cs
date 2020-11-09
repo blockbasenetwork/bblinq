@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using agap2IT.Labs.BlockBase.BBLinq.Helper;
-using agap2IT.Labs.BlockBase.BBLinq.Properties;
+using BlockBase.BBLinq.Helper;
+using BlockBase.BBLinq.Properties;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Context
+namespace BlockBase.BBLinq.Context
 {
     internal class BbLinqExecutor
     {

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using agap2IT.Labs.BlockBase.BBLinq.Context;
-using agap2IT.Labs.BlockBase.BBLinq.ExtensionMethods;
-using agap2IT.Labs.BlockBase.BBLinq.Interfaces;
-using agap2IT.Labs.BlockBase.BBLinq.Parser;
-using agap2IT.Labs.BlockBase.BBLinq.Pocos.Components;
-using agap2IT.Labs.BlockBase.BBLinq.Queries;
+using BlockBase.BBLinq.Context;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Interfaces;
+using BlockBase.BBLinq.Parser;
+using BlockBase.BBLinq.Pocos.Components;
+using BlockBase.BBLinq.Queries;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Sets
+namespace BlockBase.BBLinq.Sets
 {
     public class BbJoinSet<TA, TB> : IBbJoinSet<TA, TB>
     {

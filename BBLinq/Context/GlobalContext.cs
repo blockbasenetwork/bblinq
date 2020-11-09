@@ -1,4 +1,4 @@
-﻿namespace agap2IT.Labs.BlockBase.BBLinq.Context
+﻿namespace BlockBase.BBLinq.Context
 {
     /// <summary>
     /// Context used to store items needed to the context execution such as query executors

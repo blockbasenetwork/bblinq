@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.Pocos.Results
+namespace BlockBase.BBLinq.Pocos.Results
 {
     public class Response
     {

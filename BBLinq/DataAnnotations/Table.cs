@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace agap2IT.Labs.BlockBase.BBLinq.DataAnnotations
+namespace BlockBase.BBLinq.DataAnnotations
 {
     /// <summary>
     /// An attribute on a class to replace its name with a suitable one for the table
