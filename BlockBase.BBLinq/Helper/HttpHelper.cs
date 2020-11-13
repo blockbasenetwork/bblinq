@@ -45,6 +45,11 @@ namespace BlockBase.BBLinq.Helper
             return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 
+        /// <summary>
+        /// Executes a http web request returning a response with no ssl verification
+        /// </summary>
+        /// <param name="httpWebRequest">the http request</param>
+        /// <returns>the call's result</returns>
         public static async Task<string> CallWebRequestNoSslVerification(HttpWebRequest httpWebRequest)
         {
             httpWebRequest.ServerCertificateValidationCallback = delegate { return true; };
@@ -52,7 +57,11 @@ namespace BlockBase.BBLinq.Helper
             return await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
         }
 
-
+        /// <summary>
+        /// Executes a http web request returning a response
+        /// </summary>
+        /// <param name="httpWebRequest">the http request</param>
+        /// <returns>the call's result</returns>
         public static async Task<string> CallWebRequest(HttpWebRequest httpWebRequest)
         {
             httpWebRequest.ServerCertificateValidationCallback = delegate { return true; };

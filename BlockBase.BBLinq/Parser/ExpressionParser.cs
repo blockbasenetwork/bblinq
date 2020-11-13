@@ -53,6 +53,11 @@ namespace BlockBase.BBLinq.Parser
 
         #region Expression parser
 
+        /// <summary>
+        /// Parses a complex query
+        /// </summary>
+        /// <param name="expression">a complex expression</param>
+        /// <returns>the query as a string</returns>
         public static string ParseQuery(Expression expression)
         {
             var builder = new BbSqlQueryBuilder();
@@ -95,6 +100,11 @@ namespace BlockBase.BBLinq.Parser
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Parses a Property Access
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         private static TableField ParsePropertyAccess(MemberExpression expression)
         {
             var member = expression.Member;
@@ -144,13 +154,22 @@ namespace BlockBase.BBLinq.Parser
         }
 
         #endregion
-
+        /// <summary>
+        /// Executes a lambda expression
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         private static object ExecuteExpression(Expression expression)
         {
             var result = Expression.Lambda(expression).Compile().DynamicInvoke();
             return result;
         }
 
+        /// <summary>
+        /// Parses a select body
+        /// </summary>
+        /// <param name="selectBody"></param>
+        /// <returns></returns>
         public static IEnumerable<PropertyFieldAssignment> ParseSelectBody(Expression selectBody)
         {
             return selectBody switch

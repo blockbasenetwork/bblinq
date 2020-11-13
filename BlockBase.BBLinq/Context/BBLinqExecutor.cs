@@ -4,11 +4,17 @@ using BlockBase.BBLinq.Properties;
 
 namespace BlockBase.BBLinq.Context
 {
-    internal class BbLinqExecutor
+    public class BbLinqExecutor
     {
         private readonly string _node;
         private readonly string _databaseName;
-        internal BbLinqExecutor(string node, string databaseName)
+
+        /// <summary>
+        /// The default constructor
+        /// </summary>
+        /// <param name="node">the node's address</param>
+        /// <param name="databaseName">the database name</param>
+        public BbLinqExecutor(string node, string databaseName)
         {
             _node = node;
             _databaseName = databaseName;
@@ -30,7 +36,7 @@ namespace BlockBase.BBLinq.Context
         /// </summary>
         /// <param name="bodyQuery">the query to execute</param>
         /// <returns>a root result</returns>
-        internal async Task<string> ExecuteQueryAsync(string bodyQuery)
+        public async Task<string> ExecuteQueryAsync(string bodyQuery)
         {
             bodyQuery = $"{SQLExpressions.USE} {_databaseName};\n{bodyQuery}";
             var request = HttpHelper.ComposeWebRequestPost($"{_node}{Resources.PATH_EXECUTE_QUERY}");
@@ -43,7 +49,7 @@ namespace BlockBase.BBLinq.Context
         /// </summary>
         /// <param name="bodyQuery">the query to execute</param>
         /// <returns>a result</returns>
-        internal async Task<string> ExecuteQueryToJsonAsync(string bodyQuery)
+        public async Task<string> ExecuteQueryToJsonAsync(string bodyQuery)
         {
             var request = HttpHelper.ComposeWebRequestPost($"{_node}{Resources.PATH_EXECUTE_QUERY_TO_CONTENT}");
             var json = await HttpHelper.CallWebRequestNoSslVerification(request, bodyQuery);

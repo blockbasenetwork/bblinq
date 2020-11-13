@@ -7,7 +7,14 @@ namespace BlockBase.BBLinq.Queries
 {
     public class UpdateQuery<T>
     {
+        /// <summary>
+        /// An object used as reference for the DELETE operation
+        /// </summary>
         public T Record { get; }
+
+        /// <summary>
+        /// A condition used as reference for the DELETE operation
+        /// </summary>
         public LambdaExpression Where { get; }
         public UpdateQuery(T record, LambdaExpression where)
         {
@@ -15,11 +22,19 @@ namespace BlockBase.BBLinq.Queries
             Where = where;
         }
 
+        /// <summary>
+        /// The constructor that uses an object as reference
+        /// </summary>
+        /// <param name="record">the record</param>
         public UpdateQuery(T record)
         {
             Record = record;
         }
 
+        /// <summary>
+        /// Returns the SQL query built from the request
+        /// </summary>
+        /// <returns>A update sql query string</returns>
         public override string ToString()
         {
             var queryBuilder = new BbSqlQueryBuilder();

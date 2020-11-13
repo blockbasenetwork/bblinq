@@ -6,12 +6,24 @@ namespace BlockBase.BBLinq.Queries
 {
     public class InsertQuery<T>
     {
-
+        /// <summary>
+        /// An object used as reference for the DELETE operation
+        /// </summary>
         public T Record { get; }
+
+        /// <summary>
+        /// Constructor used with the record
+        /// </summary>
+        /// <param name="record">the record to delete</param>
         public InsertQuery(T record)
         {
             Record = record;
         }
+
+        /// <summary>
+        /// Returns the SQL query built from the request
+        /// </summary>
+        /// <returns>A insert sql query string</returns>
         public override string ToString()
         {
             var type = typeof(T);

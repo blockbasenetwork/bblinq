@@ -9,7 +9,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
     /// <summary>
     /// Extension methods for the Expression type and its derivatives
     /// </summary>
-    internal static class ExpressionExtensionMethods
+    public static class ExpressionExtensionMethods
     {
 
         #region Binary Expressions
@@ -18,7 +18,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// </summary>
         /// <param name="expression">the expression</param>
         /// <returns>a binary expression type</returns>
-        internal static BinaryExpressionCategory GetExpressionType(this BinaryExpression expression)
+        public static BinaryExpressionCategory GetExpressionType(this BinaryExpression expression)
         {
             switch (expression.NodeType)
             {
@@ -45,22 +45,22 @@ namespace BlockBase.BBLinq.ExtensionMethods
 
         #region Expressions
         /// <summary>
-        /// Returns an internal expression
+        /// Returns an public expression
         /// </summary>
         /// <param name="expression">the expression</param>
-        /// <returns>the internal expression</returns>
-        internal static Expression GetExpression(this Expression expression)
+        /// <returns>the public expression</returns>
+        public static Expression GetExpression(this Expression expression)
         {
             var propertyInfo = expression.GetType().GetProperty("Expression");
             return propertyInfo?.GetValue(expression) as Expression;
         }
 
         /// <summary>
-        /// Returns an internal expression
+        /// Returns an public expression
         /// </summary>
         /// <param name="expression">the expression</param>
-        /// <returns>the internal expression</returns>
-        internal static MemberInfo GetMember(this Expression expression)
+        /// <returns>the public expression</returns>
+        public static MemberInfo GetMember(this Expression expression)
         {
             var propertyInfo = expression.GetType().GetProperty("Member");
             return propertyInfo?.GetValue(expression) as MemberInfo;
@@ -71,7 +71,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// </summary>
         /// <param name="expression">an expression for a new object</param>
         /// <returns>a list of table,field name pairings</returns>
-        internal static IEnumerable<TableField> GetTableAndFieldsPairings(this NewExpression expression)
+        public static IEnumerable<TableField> GetTableAndFieldsPairings(this NewExpression expression)
         {
             var arguments = expression.Arguments;
             var result = new List<TableField>();
@@ -95,7 +95,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// </summary>
         /// <param name="expression">an expression for a object initializer</param>
         /// <returns>a list of table,field name pairings</returns>
-        internal static IEnumerable<TableField> GetTablesAndFieldsPairings(this MemberInitExpression expression)
+        public static IEnumerable<TableField> GetTablesAndFieldsPairings(this MemberInitExpression expression)
         {
             var bindings = expression.Bindings;
             var result = new List<TableField>();
@@ -115,7 +115,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// </summary>
         /// <param name="expression">an expression for a new object</param>
         /// <returns>a list of table,field name pairings</returns>
-        internal static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this NewExpression expression)
+        public static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this NewExpression expression)
         {
             var arguments = expression.Arguments;
             var members = expression.Members;
@@ -141,7 +141,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// </summary>
         /// <param name="expression">an expression for a object initializer</param>
         /// <returns>a list of table,field name pairings</returns>
-        internal static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this MemberInitExpression expression)
+        public static IEnumerable<PropertyFieldAssignment> GetTableFieldPropertyTuples(this MemberInitExpression expression)
         {
             var bindings = expression.Bindings;
             var result = new List<PropertyFieldAssignment>();
@@ -158,19 +158,34 @@ namespace BlockBase.BBLinq.ExtensionMethods
             return result;
         }
 
-        internal static bool IsConstantMemberAccess(this MemberExpression expression)
+        /// <summary>
+        /// Checks if the expression is a constant member access
+        /// </summary>
+        /// <param name="expression">The expression</param>
+        /// <returns>true if it is a constant member access. false otherwise</returns>
+        public static bool IsConstantMemberAccess(this MemberExpression expression)
         {
             var innerExpression = expression.Expression;
             return innerExpression != null && innerExpression.NodeType == ExpressionType.Constant;
         }
 
-        internal static bool IsPropertyMemberAccess(this MemberExpression expression)
+        /// <summary>
+        /// Checks if the expression is a property member access
+        /// </summary>
+        /// <param name="expression">The expression</param>
+        /// <returns>true if it is a property member access. false otherwise</returns>
+        public static bool IsPropertyMemberAccess(this MemberExpression expression)
         {
             var innerExpression = expression.Expression;
             return innerExpression != null && innerExpression.NodeType == ExpressionType.Parameter;
         }
 
-        internal static bool IsOperator(this Expression expression)
+        /// <summary>
+        /// Checks if the expression is an operator
+        /// </summary>
+        /// <param name="expression">The expression</param>
+        /// <returns>true if it is an operator. false otherwise</returns>
+        public static bool IsOperator(this Expression expression)
         {
             var operators = new ExpressionType[]
             {

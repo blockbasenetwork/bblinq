@@ -13,6 +13,12 @@ namespace BlockBase.BBLinq.Parser
 {
     public class ResultParser
     {
+        /// <summary>
+        /// Parses a result on a BBSet Request
+        /// </summary>
+        /// <typeparam name="TR"></typeparam>
+        /// <param name="queryResult"></param>
+        /// <returns></returns>
         public static async Task<IEnumerable<TR>> ParseResult<TR>(Task<string> queryResult)
         {
             var result = await queryResult;
@@ -43,6 +49,12 @@ namespace BlockBase.BBLinq.Parser
             return resultObjects;
         }
 
+        /// <summary>
+        /// Parses a result on a Join or Dynamic Request
+        /// </summary>
+        /// <typeparam name="TR"></typeparam>
+        /// <param name="queryResult"></param>
+        /// <returns></returns>
         public static async Task<IEnumerable<TR>> ParseResult<TR>(Task<string> queryResult, IEnumerable<PropertyFieldAssignment> properties, Type type)
         {
             var result = await queryResult;
@@ -56,21 +68,19 @@ namespace BlockBase.BBLinq.Parser
             var resultObjects = new List<TR>();
             var columns = parseResult.Response.ToArray()[1].Columns;
             var data = parseResult.Response.ToArray()[1].Data;
+
+
             foreach (var line in data)
             {
-                var args = new List<object>();
+                var newInstance = Activator.CreateInstance(type);
                 for (var i = 0; i < columns.Length; i++)
                 {
                     var property = fieldNames[columns[i]];
                     var propType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                    args.Add(Convert.ChangeType(line[i], propType));
-                    
+                    property.SetValue(newInstance, Convert.ChangeType(line[i], propType));
                 }
-
-                var newInstance = Activator.CreateInstance(type, args.ToArray());
                 resultObjects.Add((TR)newInstance);
             }
-
             return resultObjects;
         }
     }
