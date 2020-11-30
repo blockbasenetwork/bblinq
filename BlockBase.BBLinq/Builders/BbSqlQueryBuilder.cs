@@ -8,7 +8,7 @@ namespace BlockBase.BBLinq.Builders
     /// <summary>
     /// A sql query builder for BlockBase
     /// </summary>
-    public class BbSqlQueryBuilder : SqlQueryBuilder<BbSqlDictionary>
+    public class BbSqlQueryBuilder : SqlQueryBuilder<BbSqlDictionary, BbSqlQueryBuilder>
     {
         #region Simple expressions
 
@@ -645,26 +645,6 @@ namespace BlockBase.BBLinq.Builders
                 }
             }
             return WrapRightListSide();
-        }
-
-        /// <summary>
-        /// Appends a content string to the query
-        /// </summary>
-        /// <param name="content">the content string</param>
-        /// <returns>an updated query builder</returns>
-        public BbSqlQueryBuilder Append(string content)
-        {
-            return Append<BbSqlQueryBuilder>(content);
-        }
-
-
-        /// <summary>
-        /// Cleans the content string
-        /// </summary>
-        /// <returns>an updated query builder</returns>
-        public BbSqlQueryBuilder Clear()
-        {
-            return Clear<BbSqlQueryBuilder>();
         }
 
         /// <summary>

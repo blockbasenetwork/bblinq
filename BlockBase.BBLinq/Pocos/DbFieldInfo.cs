@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using BlockBase.BBLinq.Enums;
+using BlockBase.BBLinq.ExtensionMethods;
 
 namespace BlockBase.BBLinq.Pocos
 {

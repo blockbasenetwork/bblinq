@@ -10,7 +10,7 @@ using BlockBase.BBLinq.Settings;
 
 namespace BlockBase.BBLinq.Context
 {
-    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TQueryBuilder : SqlQueryBuilder<TDictionary> where TDictionary:SqlDictionary
+    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TDictionary : SqlDictionary where TQueryBuilder:SqlQueryBuilder<TDictionary, TQueryBuilder>
     {
         private readonly ContextCache _cache = ContextCache.Instance;
 
@@ -33,7 +33,7 @@ namespace BlockBase.BBLinq.Context
 
             foreach (var prop in properties)
             {
-                if (prop.PropertyType.Is(typeof(DbSet)))
+                if (prop.PropertyType.Is(typeof(DbSet<TQueryExecutor>)))
                 {
                     dbSets.Add(prop);
                 }

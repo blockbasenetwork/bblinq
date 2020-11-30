@@ -2,18 +2,85 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Interfaces;
+using BlockBase.BBLinq.QueryExecutors;
 
 namespace BlockBase.BBLinq.Sets
 {
-    public class DbJoin
+    public class BbBaseSet<TResult>: DbSet<BbQueryExecutor>,
+        ISkips<TResult>,
+        ITakes<TResult>,
+        IEncrypts<TResult> where TResult : BbBaseSet<TResult>
     {
+
+        protected int RecordsToSkip;
+        protected int RecordLimit;
+        protected bool Encrypted;
+        protected LambdaExpression Filter;
+
+        /// <summary>
+        /// Returns the set to its original form
+        /// </summary>
+        /// <returns></returns>
+        public virtual TResult Clear()
+        {
+            Filter = null;
+            Encrypted = false;
+            RecordLimit = -1;
+            RecordsToSkip = 0;
+            return (TResult)this;
+        }
+
+        /// <summary>
+        /// Adds a encrypt flag so that the query, when executed is encrypted
+        /// </summary>
+        /// <returns>the updated BbSet</returns>
+        public TResult Encrypt()
+        {
+            Encrypted = true;
+            return (TResult)this;
+        }
+
+        /// <summary>
+        /// Sets the amount of records the user intends to skip before fetching a result
+        /// </summary>
+        /// <param name="amount">the amount of records to skip</param>
+        /// <returns>the updated set</returns>
+        public TResult Skip(int amount)
+        {
+            RecordsToSkip = amount;
+            return (TResult)this;
+        }
+
+        /// <summary>
+        /// Sets the amount of records the user intends to fetch
+        /// </summary>
+        /// <param name="amount">the amount of records to fetch</param>
+        /// <returns>the updated set</returns>
+        public TResult Take(int amount)
+        {
+            RecordLimit = amount;
+            return (TResult)this;
+        }
+
+        /// <summary>
+        /// Adds a filter on a select query
+        /// </summary>
+        /// <param name="predicate">the filter</param>
+        /// <returns>the updated set</returns>
+        protected virtual TResult Where(LambdaExpression predicate)
+        {
+            Filter = predicate;
+            return (TResult)this;
+        }
+
         /// <summary>
         /// Generates a join based on a list of existing types and a new type
         /// </summary>
         /// <param name="existingTypes">the list of existing types</param>
         /// <param name="newType">the new type</param>
         /// <returns>a join predicate</returns>
-        protected LambdaExpression GenerateJoinExpression(IEnumerable<Type> existingTypes, Type newType)
+        protected static LambdaExpression GenerateJoinExpression(IEnumerable<Type> existingTypes, Type newType)
         {
 
             var leftParameter = Expression.Parameter(newType, newType.Name.ToLower());

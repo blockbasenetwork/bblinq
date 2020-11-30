@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BlockBase.BBLinq.Annotations;
+using BlockBase.BBLinq.Enums;
 
 namespace BlockBase.BBLinq.ExtensionMethods
 {
@@ -116,5 +117,19 @@ namespace BlockBase.BBLinq.ExtensionMethods
             return default;
         }
 
+        /// <summary>
+        /// Converts a type to a BBSqlType
+        /// </summary>
+        /// <param name="type">the type</param>
+        /// <returns>the returning BbSQL type</returns>
+        public static BbSqlType ToBbSqlType(this Type type)
+        {
+            if (type == typeof(bool)) return BbSqlType.Bool;
+            if (type == typeof(int)) return BbSqlType.Int;
+            if (type == typeof(decimal)) return BbSqlType.Decimal;
+            if (type == typeof(DateTime)) return BbSqlType.DateTime;
+            if (type == typeof(double)) return BbSqlType.Double;
+            return type == typeof(TimeSpan) ? BbSqlType.Duration : BbSqlType.Text;
+        }
     }
 }

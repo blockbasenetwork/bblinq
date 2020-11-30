@@ -8,8 +8,11 @@ namespace BlockBase.BBLinq.QueryExecutors
     /// <summary>
     /// Base query executor
     /// </summary>
-    public class SqlQueryExecutor
+    public abstract class SqlQueryExecutor
     {
+        
+        public abstract Task<string> ExecuteQueryAsync(string query);
+
         /// <summary>
         /// Executes an asynchronous query
         /// </summary>

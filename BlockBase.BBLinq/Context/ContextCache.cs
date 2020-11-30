@@ -5,7 +5,7 @@ namespace BlockBase.BBLinq.Context
     /// <summary>
     /// The context's cache
     /// </summary>
-    internal sealed class ContextCache
+    public sealed class ContextCache
     {
         /// <summary>
         /// Instance of the context cache

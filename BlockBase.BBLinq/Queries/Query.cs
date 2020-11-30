@@ -8,7 +8,7 @@ namespace BlockBase.BBLinq.Queries
     /// <summary>
     /// Base for any query
     /// </summary>
-    public abstract class Query<TQueryBuilder, TDictionary> where TQueryBuilder: SqlQueryBuilder<TDictionary> where TDictionary : SqlDictionary
+    public abstract class Query<TQueryBuilder, TDictionary> where TQueryBuilder: SqlQueryBuilder<TDictionary, TQueryBuilder> where TDictionary : SqlDictionary
     {
         protected TQueryBuilder QueryBuilder => ContextCache.Instance.Get<TQueryBuilder>("queryBuilder");
 
