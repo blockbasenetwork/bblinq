@@ -2,6 +2,9 @@
 
 namespace BlockBase.BBLinq.Context
 {
+    /// <summary>
+    /// The context's cache
+    /// </summary>
     internal sealed class ContextCache
     {
         /// <summary>

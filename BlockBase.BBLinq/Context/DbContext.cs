@@ -10,10 +10,17 @@ using BlockBase.BBLinq.Settings;
 
 namespace BlockBase.BBLinq.Context
 {
-    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TQueryBuilder : SqlQueryBuilder where TDictionary:SqlDictionary
+    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TQueryBuilder : SqlQueryBuilder<TDictionary> where TDictionary:SqlDictionary
     {
         private readonly ContextCache _cache = ContextCache.Instance;
 
+        /// <summary>
+        /// Builds a new context that adds settings, executors, builders and dictionaries to the cache. It also starts each data set.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="executor"></param>
+        /// <param name="queryBuilder"></param>
+        /// <param name="dictionary"></param>
         protected DbContext(TSettings settings, TQueryExecutor executor, TQueryBuilder queryBuilder, TDictionary dictionary)
         {
             _cache.Add("settings",settings);
