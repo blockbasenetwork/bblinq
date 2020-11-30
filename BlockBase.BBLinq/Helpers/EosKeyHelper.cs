@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace BlockBase.BBLinq.Helpers
 {
@@ -28,7 +29,7 @@ namespace BlockBase.BBLinq.Helpers
             if (!match.Success) throw new FormatException("Invalid public key prefix.");
 
             publicKeyString = publicKeyString.Substring(EOS_PREFIX.Length);
-            var publicKeyBytesWithChecksum = Base58.Decode(publicKeyString);
+            var publicKeyBytesWithChecksum = Base64.Decode(publicKeyString);
             var publicKeyBytesWithoutChecksum = publicKeyBytesWithChecksum.Take(PUBLIC_KEY_LENGHT).ToArray();
 
             var receivedChecksum = publicKeyBytesWithChecksum.TakeLast(CHECKSUM_LENGHT).ToArray();
