@@ -32,8 +32,17 @@ Assist in defining possible values for a certain condition (enumerables)
 ## Helpers
 Helpers assist in Http requests, signatures and encryption
 
+## Interfaces
+Interfaces help to build extensive classes such as joins and sets.
+
+* 
+
 ## Query Executors
 
+## Results
+
+* Response - When a query is executed, this type parses it. It's used as an intermediary between a string response and a QueryResult.
+* QueryResult - Typed response with additional info to be returned.
 
 ## Sets
 Sets are used as a base to perform operations over the data.
