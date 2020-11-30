@@ -1,6 +1,6 @@
 ﻿namespace BlockBase.BBLinq.Dictionaries
 {
-    public class BbSqlDictionary : CoreDictionary
+    public class BbSqlDictionary : SqlDictionary
     {
         public virtual string AllSelector => "*";
         public virtual string DifferentFrom => "!=";
