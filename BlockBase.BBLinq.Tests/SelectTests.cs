@@ -10,10 +10,7 @@ namespace BlockBase.BBLinq.Tests
     public class SelectTest
     {
         private Country _simpleRecord = new Country() { Id = 1, Name = "Portugal" };
-        private Country _nonExistingRecord = new Country() { Id = 8, Name = "Portugal" };
         private string _countryName = "England";
-        private string _countryNameFirstHalf = "Fra";
-        private string _countryNameSecondHalf = "nce";
 
         [TestMethod]
         public void SimpleList()
@@ -55,8 +52,6 @@ namespace BlockBase.BBLinq.Tests
             Assert.IsTrue(res.Succeeded && res.Result.ToList().Count > 0);
         }
 
-        //To be done
-
         [TestMethod]
         public void ListWithLimit()
         {
@@ -64,8 +59,6 @@ namespace BlockBase.BBLinq.Tests
             var res = ctx.Countries.Limit(1).List().Result;
             Assert.IsTrue(res.Succeeded && res.Result.ToList().Count == 1 && res.Result.ToList()[0].Name == "England");
         }
-
-        //To be done
 
         [TestMethod]
         public void ListWithOffset()
@@ -83,7 +76,6 @@ namespace BlockBase.BBLinq.Tests
             Assert.IsTrue(res.Succeeded && res.Result.ToList().Count == 3);
         }
 
-
         [TestMethod]
         public void JoinOnThree()
         {
@@ -92,6 +84,15 @@ namespace BlockBase.BBLinq.Tests
             Assert.IsTrue(res.Succeeded && res.Result.ToList().Count == 11);
         }
 
+        [TestMethod]
+        public void JoinOnThreeWithObject()
+        {
+            using var ctx = new TestModelContext();
+            var res = ctx.Countries.Join<Team>().Join<Player>().List((c, t, p) => new PlayerData(){ PlayerId = p.Id, CountryName = c.Name, TeamName = t.Name, TeamWebsite = t.Website, PlayerName = p.Name, Email = p.Email, BirthDate = p.BirthDate }).Result;
+            Assert.IsTrue(res.Succeeded && res.Result.ToList().Count == 11);
+        }
+
+        //To be done
 
         [TestMethod]
         public void JoinOnAll()
