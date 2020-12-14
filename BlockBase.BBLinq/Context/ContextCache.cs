@@ -15,12 +15,17 @@ namespace BlockBase.BBLinq.Context
         /// <summary>
         /// The cache's content
         /// </summary>
-        private readonly Dictionary<string, object> _cacheContent;
+        private Dictionary<string, object> _cacheContent;
 
         /// <summary>
         /// The default's cache constructor
         /// </summary>
         private ContextCache()
+        {
+            _cacheContent = new Dictionary<string, object>();
+        }
+
+        public void Clear()
         {
             _cacheContent = new Dictionary<string, object>();
         }

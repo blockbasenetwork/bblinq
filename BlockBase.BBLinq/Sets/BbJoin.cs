@@ -48,6 +48,28 @@ namespace BlockBase.BBLinq.Sets
            return base.Where(filter);
         }
 
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
+        }
     }
 
     public class BbJoin<TA, TB, TC> : BbJoin<BbJoin<TA, TB, TC>>, ILists<TA, TB, TC>, IGets<TA, TB, TC> where TC:class where TB : class where TA : class
@@ -89,6 +111,29 @@ namespace BlockBase.BBLinq.Sets
         public BbJoin<TA, TB, TC> Where(Expression<Func<TA, TB, TC, bool>> filter)
         {
             return base.Where(filter);
+        }
+
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
         }
     }
 
@@ -132,6 +177,28 @@ namespace BlockBase.BBLinq.Sets
         {
             return base.Where(filter);
         }
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
+        }
     }
 
     public class BbJoin<TA, TB, TC, TD, TE> : BbJoin<BbJoin<TA, TB, TC, TD, TE>>, ILists<TA, TB, TC, TD, TE>, IGets<TA, TB, TC, TD, TE> where TB : class where TA : class where TC : class where TD : class where TE : class
@@ -172,6 +239,28 @@ namespace BlockBase.BBLinq.Sets
         public BbJoin<TA, TB, TC, TD, TE> Where(Expression<Func<TA, TB, TC, TD, TE, bool>> filter)
         {
             return base.Where(filter);
+        }
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
         }
     }
 
@@ -214,6 +303,29 @@ namespace BlockBase.BBLinq.Sets
         {
             return base.Where(filter);
         }
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
+        }
+
     }
 
     public class BbJoin<TA, TB, TC, TD, TE, TF, TG> : BbJoin<BbJoin<TA, TB, TC, TD, TE, TF, TG>>, ILists<TA, TB, TC, TD, TE, TF, TG>, IGets<TA, TB, TC, TD, TE, TF, TG> where TB : class where TA : class where TC : class where TD : class where TE : class where TF : class where TG : class
@@ -255,6 +367,28 @@ namespace BlockBase.BBLinq.Sets
         {
             return base.Where(filter);
         }
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF, TG> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF, TG> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
+        }
     }
 
     public class BbJoin<TA, TB, TC, TD, TE, TF, TG, TH> : BbJoin<BbJoin<TA, TB, TC, TD, TE, TF, TG, TH>>, ILists<TA, TB, TC, TD, TE, TF, TG, TH>, IGets<TA, TB, TC, TD, TE, TF, TG, TH> where TB : class where TA : class where TC : class where TD : class where TE : class where TF : class where TG : class where TH : class
@@ -284,6 +418,28 @@ namespace BlockBase.BBLinq.Sets
         public BbJoin<TA, TB, TC, TD, TE, TF, TG, TH> Where(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, bool>> filter)
         {
             return base.Where(filter);
+        }
+
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF, TG, TH> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbJoin<TA, TB, TC, TD, TE, TF, TG, TH> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
         }
     }
 }

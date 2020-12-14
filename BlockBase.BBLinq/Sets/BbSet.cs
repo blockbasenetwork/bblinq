@@ -113,6 +113,27 @@ namespace BlockBase.BBLinq.Sets
             return this.Where(predicate as LambdaExpression);
         }
 
+        /// <summary>
+        /// Sets the limit on the request
+        /// </summary>
+        /// <param name="limit">number of elements</param>
+        /// <returns></returns>
+        public BbSet<T, TKey> Limit(int limit)
+        {
+            RecordLimit = limit;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the offset on the request
+        /// </summary>
+        /// <param name="limit">number of elements to offset</param>
+        /// <returns></returns>
+        public BbSet<T, TKey> Offset(int offset)
+        {
+            RecordsToSkip = offset;
+            return this;
+        }
 
         /// <summary>
         /// Generates a join based on an expression

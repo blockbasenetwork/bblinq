@@ -8,7 +8,12 @@ using BlockBase.BBLinq.QueryExecutors;
 
 namespace BlockBase.BBLinq.Sets
 {
-    public class DbSet<TQueryExecutor> where TQueryExecutor : SqlQueryExecutor
+    public abstract class DbSet
+    {
+
+    }
+
+    public class DbSet<TQueryExecutor> : DbSet where TQueryExecutor : SqlQueryExecutor
     {
         protected TQueryExecutor Executor => ContextCache.Instance.Get<TQueryExecutor>("executor");
 

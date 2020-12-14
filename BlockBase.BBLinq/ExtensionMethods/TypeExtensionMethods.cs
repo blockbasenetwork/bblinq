@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BlockBase.BBLinq.Annotations;
@@ -115,6 +116,27 @@ namespace BlockBase.BBLinq.ExtensionMethods
                 }
             }
             return default;
+        }
+
+        /// <summary>
+        /// Retrieves the table's foreign key
+        /// </summary>
+        /// <param name="type">the class type</param>
+        /// <param name="foreignType"></param>
+        /// <returns>a table's name or an empty string if there's no table attribute</returns>
+        public static ForeignKeyAttribute[] GetForeignKeys(this Type type)
+        {
+            var properties = type.GetProperties();
+            var keys = new List<ForeignKeyAttribute>();
+            foreach (var property in properties)
+            {
+                var attributes = property.GetCustomAttributes((typeof(ForeignKeyAttribute)), false);
+                if (attributes.Length != 0 && attributes[0] is ForeignKeyAttribute fk)
+                {
+                    keys.Add(fk);
+                }
+            }
+            return keys.ToArray();
         }
 
         /// <summary>

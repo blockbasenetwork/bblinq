@@ -33,6 +33,10 @@ namespace BlockBase.BBLinq.Parsers
                 if (queryExecution != null)
                 {
                     result.ResponseMessage += queryExecution.Message;
+                    if (!queryExecution.Executed)
+                    {
+                        result.Succeeded = false;
+                    }
                 }
             }
             return result;
@@ -40,7 +44,25 @@ namespace BlockBase.BBLinq.Parsers
 
         public static async Task<QueryResult<T>> ParseFetchResult<T>(Task<string> queryResult, Dictionary<FieldValue, PropertyInfo> properties)
         {
-            return default;
+            var parseResult = JsonConvert.DeserializeObject<Result>(await queryResult);
+            var result = new QueryResult<T>()
+            {
+                Succeeded = parseResult.Succeeded,
+                Exception = parseResult.Exception,
+                ResponseMessage = parseResult.ResponseMessage
+            };
+            var response = parseResult.Response.ToList();
+            if (!parseResult.Response.Any()) return result;
+            var messageParse = ParseMessages(response[0]);
+            result.Succeeded = messageParse.Item1;
+            result.ResponseMessage += messageParse.Item2;
+            if (response.Count > 1)
+            {
+                var res = ParseResults<T>(response[1], properties);
+                if (res.Count() > 0)
+                    result.Result = res.ToArray()[0];
+            }
+            return result;
         }
 
         public static async Task<QueryResult<T>> ParseEncryptedFetchResult<T>(Task<string> queryResult)
@@ -60,7 +82,7 @@ namespace BlockBase.BBLinq.Parsers
             var response = parseResult.Response.ToList();
             if (!parseResult.Response.Any()) return result;
             var messageParse =  ParseMessages(response[0]);
-            result.Succeeded = messageParse.Item1;
+            result.Succeeded = messageParse.Item1; 
             result.ResponseMessage += messageParse.Item2;
             if (response.Count > 1)
             {
@@ -111,7 +133,7 @@ namespace BlockBase.BBLinq.Parsers
                 messageResult += result.Message;
                 if (result.Executed)
                 {
-                    success = false;
+                    success = true;
                 }
             }
             return (success, messageResult);
@@ -136,7 +158,14 @@ namespace BlockBase.BBLinq.Parsers
             {
                 var currentType = fields.Values.ToList()[i].PropertyType;
                 var propType = Nullable.GetUnderlyingType(currentType) ?? currentType;
-                args.Add(Convert.ChangeType(values[i], propType));
+                if(currentType == typeof(Guid))
+                {
+                    args.Add(Guid.Parse(values[i]));
+                }
+                else
+                {
+                    args.Add(Convert.ChangeType(values[i], propType));
+                }
             }
             return args.ToArray();
         }

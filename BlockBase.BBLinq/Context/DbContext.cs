@@ -10,7 +10,7 @@ using BlockBase.BBLinq.Settings;
 
 namespace BlockBase.BBLinq.Context
 {
-    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TDictionary : SqlDictionary where TQueryBuilder:SqlQueryBuilder<TDictionary, TQueryBuilder>
+    public abstract class DbContext<TSettings, TQueryExecutor, TQueryBuilder, TDictionary> : IDisposable where TSettings:DbSettings where TQueryExecutor : SqlQueryExecutor where TDictionary : SqlDictionary where TQueryBuilder:SqlQueryBuilder<TDictionary, TQueryBuilder>
     {
         private readonly ContextCache _cache = ContextCache.Instance;
 
@@ -25,7 +25,7 @@ namespace BlockBase.BBLinq.Context
         {
             _cache.Add("settings",settings);
             _cache.Add("executor", executor);
-            _cache.Add("builder", queryBuilder);
+            _cache.Add("queryBuilder", queryBuilder);
             _cache.Add("dictionary", dictionary);
                 
             var properties = GetType().GetProperties();
@@ -42,6 +42,15 @@ namespace BlockBase.BBLinq.Context
             {
                 prop.SetValue(this, Activator.CreateInstance(prop.PropertyType));
             }
+        }
+
+
+        /// <summary>
+        /// Clears the context so that the executor is only available when needed
+        /// </summary>
+        public void Dispose()
+        {
+            _cache.Clear();
         }
     }
 }

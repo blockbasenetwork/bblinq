@@ -39,7 +39,7 @@ namespace BlockBase.BBLinq.Context
             var types = new List<Type>();
             foreach (var set in bbSets)
             {
-                if (!set.PropertyType.Is(typeof(DbSet<>))) continue;
+                if (!set.PropertyType.Is(typeof(DbSet))) continue;
                 var type = set.PropertyType.GetGenericArguments()[0];
                 types.Add(type);
             }

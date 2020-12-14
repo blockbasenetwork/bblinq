@@ -11,7 +11,7 @@ namespace BlockBase.BBLinq.QueryExecutors
 {
     public class BbQueryExecutor : SqlQueryExecutor
     {
-        private readonly BbSettings _settings = ContextCache.Instance.Get<BbSettings>("settings");
+        private BbSettings Settings => ContextCache.Instance.Get<BbSettings>("settings");
 
         /// <summary>
         /// If it's true, it'll add a "USE database". Turn it to false to act over the structure and to add If statements
@@ -28,15 +28,15 @@ namespace BlockBase.BBLinq.QueryExecutors
             if (UseDatabase)
             {
                 var queryBuilder = new BbSqlQueryBuilder();
-                queryBuilder.Use().WhiteSpace().Append(_settings.DatabaseName).End().Append(query);
+                queryBuilder.Use().WhiteSpace().Append(Settings.DatabaseName).End().Append(query);
                 query = queryBuilder.ToString();
             }
-            var request = HttpHelper.ComposePostWebRequest($"{_settings.NodeAddress}{Resources.PATH_EXECUTE_QUERY}");
-            var signature = SignatureHelper.SignHash(_settings.PrivateKey, Encoding.UTF8.GetBytes(query));
+            var request = HttpHelper.ComposePostWebRequest($"{Settings.NodeAddress}{Resources.PATH_EXECUTE_QUERY}");
+            var signature = SignatureHelper.SignHash(Settings.PrivateKey, Encoding.UTF8.GetBytes(query));
             var queryRequest = new Dictionary<string, string>
             {
                 {"Query", query}, 
-                {"Account", _settings.UserAccount}, 
+                {"Account", Settings.UserAccount}, 
                 {"Signature", signature}
             };
             return await ExecuteQueryAsync(request, queryRequest);
