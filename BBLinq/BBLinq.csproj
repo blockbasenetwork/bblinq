@@ -6,14 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Annotations\" />
     <Folder Include="Contexts\" />
     <Folder Include="Dictionaries\" />
     <Folder Include="Enumerables\" />
     <Folder Include="ExtensionMethods\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Validators\" />
-    <Folder Include="Settings\" />
     <Folder Include="Sets\" />
     <Folder Include="Results\" />
     <Folder Include="Parsers\" />
