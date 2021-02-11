@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace BlockBase.BBLinq.BBLinq.Exceptions
+namespace BlockBase.BBLinq.Exceptions
 {
     [Serializable]
     public class InvalidPrimaryKeyTypeException : Exception

@@ -1,9 +1,9 @@
-﻿using BlockBase.BBLinq.BBLinq.Annotations;
+﻿using BlockBase.BBLinq.Annotations;
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace BlockBase.BBLinq.BBLinq.Exceptions
+namespace BlockBase.BBLinq.Exceptions
 {
     [Serializable]
     public class InvalidRangeException : Exception

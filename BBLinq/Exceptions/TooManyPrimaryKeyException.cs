@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace BlockBase.BBLinq.BBLinq.Validators
+namespace BlockBase.BBLinq.Validators
 {
     [Serializable]
     public class TooManyPrimaryKeysException : Exception
