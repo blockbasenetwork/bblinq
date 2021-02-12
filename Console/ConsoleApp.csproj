@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>BlockBase.BBLinq.ConsoleApp</AssemblyName>
+    <RootNamespace>BlockBase.BBLinq.Console</RootNamespace>
   </PropertyGroup>
 
 </Project>
