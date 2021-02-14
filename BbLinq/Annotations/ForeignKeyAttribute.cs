@@ -8,21 +8,13 @@ namespace BlockBase.BBLinq.Annotations
     [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
     public class ForeignKeyAttribute : Attribute
     {
-        /// <summary>
-        /// Constructor used for string parent
-        /// </summary>
-        /// <param name="parentName">the parent's class name</param>
-        /// <param name="keyPropertyName">the id property</param>
+
         public ForeignKeyAttribute(string parentName)
         {
             ParentName = parentName;
         }
 
-        /// <summary>
-        /// Constructor used for type parent
-        /// </summary>
-        /// <param name="parentName">the parent's class</param>
-        /// <param name="keyPropertyName">the id property</param>
+
         public ForeignKeyAttribute(Type parent)
         {
             Parent = parent;
@@ -31,11 +23,11 @@ namespace BlockBase.BBLinq.Annotations
         /// <summary>
         /// The parent table's name
         /// </summary>
-        public string ParentName { get; private set; }
+        public string ParentName { get; }
 
         /// <summary>
         /// The type of the parent table
         /// </summary>
-        public Type Parent { get; private set; }
+        public Type Parent { get; }
     }
 }

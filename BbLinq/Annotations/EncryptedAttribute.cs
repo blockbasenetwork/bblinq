@@ -8,9 +8,14 @@ namespace BlockBase.BBLinq.Annotations
     [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
     public class EncryptedAttribute : Attribute
     {
+        public EncryptedAttribute(int buckets = 0)
+        {
+            Buckets = buckets;
+        }
+
         /// <summary>
         /// Number of buckets used to distribute data
         /// </summary>
-        public int? Buckets { get; set; }
+        public int Buckets { get; set; }
     }
 }

@@ -8,6 +8,12 @@ namespace BlockBase.BBLinq.Annotations
     [AttributeUsage(AttributeTargets.Class, AllowMultiple =false,Inherited =false)]
     public class TableAttribute : Attribute
     {
+
+        public TableAttribute(string name)
+        {
+            Name = name;
+        }
+
         /// <summary>
         /// The table's name
         /// </summary>
