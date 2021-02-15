@@ -13,13 +13,12 @@ namespace BlockBase.BBLinq.Validators
         /// <summary>
         /// validates the model
         /// </summary>
-        /// <param name="model">the model's entities</param>
         public static void Validate(Type[] model)
         {
             ValidateDuplicates(model);
-            for(var counter = 0; counter < model.Length; counter++)
+            foreach (var entity in model)
             {
-                EntityValidator.Validate(model[counter]);
+                EntityValidator.Validate(entity);
             }
         }
 
@@ -32,9 +31,9 @@ namespace BlockBase.BBLinq.Validators
 
             {
                 var tableNames = new List<(string,string)>();
-                for (var counter = 0; counter < model.Length; counter++)
+                foreach (var entity in model)
                 {
-                    tableNames.Add((model[counter].Name, model[counter].GetTableName()));
+                    tableNames.Add((entity.Name, entity.GetTableName()));
                 }
                 entityNames = tableNames.ToArray();
             }

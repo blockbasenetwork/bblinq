@@ -18,13 +18,13 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <param name="property">the property that holds the range attribute</param>
         public static void Validate(Type type, PropertyInfo property)
         {
-            var rangeAttribute = property.GetRange();
-            if (rangeAttribute == default)
+            var ranges = property.GetRanges();
+            if (ranges == null || ranges.Length == 0)
             {
                 return;
             }
-            ValidateBucket(type, property, rangeAttribute);
-            ValidateRange(type, property, rangeAttribute);
+            ValidateBucket(type, property, ranges[0]);
+            ValidateRange(type, property, ranges[0]);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         }
 
         /// <summary>
-        /// Checks if the range has valid maximum and minimum valies
+        /// Checks if the range has valid maximum and minimum values
         /// </summary>
         /// <param name="type">the model type</param>
         /// <param name="property">the property that holds the range attribute</param>

@@ -5,8 +5,8 @@ namespace BlockBase.BBLinq.Annotations
     /// <summary>
     /// The Column attribute
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
-    public class ColumnAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ColumnAttribute : BlockBaseAnnotationAttribute
     {
 
         public ColumnAttribute(string name)

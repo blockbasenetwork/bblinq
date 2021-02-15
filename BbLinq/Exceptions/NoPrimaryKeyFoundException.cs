@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace BlockBase.BBLinq.Validators
+namespace BlockBase.BBLinq.Exceptions
 {
     [Serializable]
     public class NoPrimaryKeyFoundException : Exception

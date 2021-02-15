@@ -32,7 +32,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
         /// <summary>
         /// Checks if an array is null or empty
         /// </summary>
-        /// <typeparam name="T">the elements's type</typeparam>
+        /// <typeparam name="T">the elements' type</typeparam>
         /// <param name="array">the array of elements</param>
         /// <returns>true if the array is null or empty</returns>
         public static bool IsNullOrEmpty<T>(this T[] array)
@@ -42,9 +42,9 @@ namespace BlockBase.BBLinq.ExtensionMethods
                 return true;
             }
 
-            for(var counter = 0; counter < array.Length; counter++)
+            foreach (var type in array)
             {
-                if(!array[counter].Equals(default(T)))
+                if(!type.Equals(default(T)))
                 {
                     return false;
                 }

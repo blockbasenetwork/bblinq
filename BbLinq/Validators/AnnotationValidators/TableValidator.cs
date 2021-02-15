@@ -14,7 +14,6 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <summary>
         /// Checks if a table is valid
         /// </summary>
-        /// <param name="type">the model type</param>
         public static void Validate(Type type)
         {
             var tableName = type.GetTableName();
@@ -27,12 +26,9 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <summary>
         /// Checks if a table has an appropriate name
         /// </summary>
-        /// <param name="type">the model type</param>
-        /// <param name="tableName">the table name</param>
         private static void ValidateNameForWrongCharacters(MemberInfo type, string tableName)
         {
-            var regex = new Regex("([^(A-Za-z_0-9)])");
-            if(regex.IsMatch(tableName))
+            if(tableName.HasNonAlphanumericOrUnderscore())
             {
                 throw new InvalidTableNameException(type.Name, tableName);
             }

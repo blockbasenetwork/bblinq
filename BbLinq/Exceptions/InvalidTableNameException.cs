@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace BlockBase.BBLinq.Exceptions
@@ -9,7 +8,7 @@ namespace BlockBase.BBLinq.Exceptions
     {
         private static string GenerateErrorMessage(string typeName, string tableName)
         {
-            var errorMessage = $"The type {typeName} is associated to a table whose name is not valid. The name should only be composed by alphanumerics and _ (underscore). The inputed table name was {tableName}";
+            var errorMessage = $"The type {typeName} is associated to a table whose name is not valid. The name should only be composed by alphanumerics and _ (underscore). The inputted table name was {tableName}";
             return errorMessage;
         }
 

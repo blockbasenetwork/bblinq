@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace BlockBase.BBLinq.Exceptions
@@ -9,7 +8,7 @@ namespace BlockBase.BBLinq.Exceptions
     {
         private static string GenerateErrorMessage(string typeName, string propertyName, string columnName)
         {
-            var errorMessage = $"The type {typeName} has a property {propertyName} that is associated to a column whose name is not valid. The name should only be composed by alphanumerics and _ (underscore). The inputed column name was {columnName}";
+            var errorMessage = $"The type {typeName} has a property {propertyName} that is associated to a column whose name is not valid. The name should only be composed by alphanumerics and _ (underscore). The inputted column name was {columnName}";
             return errorMessage;
         }
 

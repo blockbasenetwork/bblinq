@@ -20,7 +20,7 @@ namespace Tests.ValidatorTests
 
     public class EncryptionTestClassC
     {
-        [Encrypted(Buckets = 0)]
+        [Encrypted(Buckets = -1)]
         public string Prop { get; set; }
     }
 
@@ -50,7 +50,7 @@ namespace Tests.ValidatorTests
         }
         
         [TestMethod]
-        public void TestEncrytionNoBuckets()
+        public void TestEncryptionNoBuckets()
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Tests.ValidatorTests
 
 
         [TestMethod]
-        public void TestEncryptionZeroBuckets()
+        public void TestEncryptionNegativeBuckets()
         {
             try
             {

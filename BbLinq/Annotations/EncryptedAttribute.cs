@@ -5,8 +5,8 @@ namespace BlockBase.BBLinq.Annotations
     /// <summary>
     /// Sets the field as encrypted
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
-    public class EncryptedAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class EncryptedAttribute : BlockBaseAnnotationAttribute
     {
         public EncryptedAttribute(int buckets = 0)
         {

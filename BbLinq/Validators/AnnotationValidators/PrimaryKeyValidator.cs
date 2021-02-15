@@ -12,6 +12,8 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
     public static class PrimaryKeyValidator
     {
         private static readonly Type[] AcceptableTypes = { typeof(Guid), typeof(int) };
+        private const int MaximumPrimaryKeys = 1;
+        private const int MinimumPrimaryKeys = 1;
 
         /// <summary>
         /// Executes the validation process
@@ -20,7 +22,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         public static void Validate(Type type)
         {
             ValidatePrimaryKeyCount(type);
-            var key = type.GetPrimaryKeyProperty();
+            var key = type.GetPrimaryKeyProperties()[0];
             ValidatePrimaryKeyType(key);
         }
 
@@ -30,26 +32,27 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <param name="type"></param>
         private static void ValidatePrimaryKeyCount(Type type)
         {
-            var primaryKeys = type.GetPrimaryKeyProperties() as List<PropertyInfo>;
-            if(primaryKeys != null && primaryKeys.Count== 0)
+            var primaryKeys = type.GetPrimaryKeyProperties();
+            if (primaryKeys == null || primaryKeys.Length < MinimumPrimaryKeys)
             {
                 throw new NoPrimaryKeyFoundException(type.Name);
             }
-            if (primaryKeys != null && primaryKeys.Count > 1)
+
+            if (primaryKeys.Length <= MaximumPrimaryKeys)
             {
-                var primaryKeyNames = new List<string>();
-                foreach(var primaryKey in primaryKeys)
-                {
-                    primaryKeyNames.Add(primaryKey.Name);
-                }
-                throw new TooManyPrimaryKeysException(type.Name, primaryKeyNames);
+                return;
             }
+            var primaryKeyNames = new List<string>();
+            foreach (var primaryKey in primaryKeys)
+            {
+                primaryKeyNames.Add(primaryKey.Name);
+            }
+            throw new TooManyPrimaryKeysException(type.Name, primaryKeyNames);
         }
 
         /// <summary>
         /// Checks if the key's type matches one of the accepted types
         /// </summary>
-        /// <param name="property">the property</param>
         private static void ValidatePrimaryKeyType(PropertyInfo property)
         {
 
@@ -69,5 +72,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
 
             throw new InvalidPrimaryKeyTypeException(property.Name, acceptableTypes);
         }
+
+        
     }
 }

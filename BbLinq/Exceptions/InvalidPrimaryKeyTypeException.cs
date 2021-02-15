@@ -1,36 +1,31 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace BlockBase.BBLinq.Exceptions
 {
     [Serializable]
-    public class InvalidPrimaryKeyTypeException : Exception
+    public class InvalidForeignKeyTypeException : Exception
     {
-        private static string GenerateErrorMessage(string propertyName, string[] acceptableTypes)
+        private static string GenerateErrorMessage(string typeName, string propertyName, string parentKeyTypeName, string foreignKeyTypeName)
         {
-            var errorMessage = $"The type provided in the primary key for *{propertyName}* should be one of the following:\n";
-            foreach(var acceptableType in acceptableTypes)
-            {
-                errorMessage += $"{acceptableType}\n";
-            }
+            var errorMessage = $"The type provided in the foreign key for *{propertyName}* on {typeName} should be {parentKeyTypeName} instead of {foreignKeyTypeName}:\n";
             return errorMessage;
         }
 
 
-        public InvalidPrimaryKeyTypeException(string propertyName, string[] acceptableTypes): base(GenerateErrorMessage(propertyName, acceptableTypes))
+        public InvalidForeignKeyTypeException(string typeName, string propertyName, string parentKeyTypeName, string foreignKeyTypeName) : base(GenerateErrorMessage(typeName, propertyName, parentKeyTypeName, foreignKeyTypeName))
         {
         }
 
-        public InvalidPrimaryKeyTypeException(string message) : base(message)
+        public InvalidForeignKeyTypeException(string message) : base(message)
         {
         }
 
-        public InvalidPrimaryKeyTypeException(string message, Exception innerException) : base(message, innerException)
+        public InvalidForeignKeyTypeException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        protected InvalidPrimaryKeyTypeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected InvalidForeignKeyTypeException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

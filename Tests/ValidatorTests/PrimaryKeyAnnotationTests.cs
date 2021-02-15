@@ -1,23 +1,20 @@
 ﻿using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Exceptions;
-using BlockBase.BBLinq.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using BlockBase.BBLinq.Validators.AnnotationValidators;
 
 namespace Tests.ValidatorTests
 {
     public class PrimaryKeyTestClassA
     {
-        [Key]
+        [PrimaryKey]
         public string Prop { get; set; }
     }
 
     public class PrimaryKeyTestClassB
     {
-        [Key]
+        [PrimaryKey]
         public Guid Prop { get; set; }
     }
 
@@ -29,10 +26,10 @@ namespace Tests.ValidatorTests
 
     public class PrimaryKeyTestClassD
     {
-        [Key]
+        [PrimaryKey]
         public Guid Prop { get; set; }
         
-        [Key]
+        [PrimaryKey]
         public Guid PropB { get; set; }
     }
 
@@ -45,7 +42,6 @@ namespace Tests.ValidatorTests
             try
             {
                 var type = typeof(PrimaryKeyTestClassA);
-                var property = type.GetProperty("Prop");
                 PrimaryKeyValidator.Validate(type);
                 Assert.IsTrue(true);
             }
@@ -61,7 +57,6 @@ namespace Tests.ValidatorTests
             try
             {
                 var type = typeof(PrimaryKeyTestClassB);
-                var property = type.GetProperty("Prop");
                 PrimaryKeyValidator.Validate(type);
                 Assert.IsTrue(true);
             }
@@ -78,7 +73,6 @@ namespace Tests.ValidatorTests
             try
             {
                 var type = typeof(PrimaryKeyTestClassC);
-                var property = type.GetProperty("Prop");
                 PrimaryKeyValidator.Validate(type);
                 Assert.IsTrue(false);
             }
@@ -95,7 +89,6 @@ namespace Tests.ValidatorTests
             try
             {
                 var type = typeof(PrimaryKeyTestClassD);
-                var property = type.GetProperty("Prop");
                 PrimaryKeyValidator.Validate(type);
                 Assert.IsTrue(true);
             }

@@ -5,25 +5,13 @@ namespace BlockBase.BBLinq.Annotations
     /// <summary>
     /// Foreign Key attribute. Either use the KeyType or the TableName
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
-    public class ForeignKeyAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ForeignKeyAttribute : BlockBaseAnnotationAttribute
     {
-
-        public ForeignKeyAttribute(string parentName)
-        {
-            ParentName = parentName;
-        }
-
-
         public ForeignKeyAttribute(Type parent)
         {
             Parent = parent;
         }
-
-        /// <summary>
-        /// The parent table's name
-        /// </summary>
-        public string ParentName { get; }
 
         /// <summary>
         /// The type of the parent table

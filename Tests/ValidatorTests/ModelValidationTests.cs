@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.Validators;
-using BlockBase.BBLinq.Validators.AnnotationValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests.ValidatorTests
@@ -35,7 +32,7 @@ namespace Tests.ValidatorTests
         {
             try
             {
-                var tables = new Type[] {typeof(TestModelA), typeof(TestModelB)};
+                var tables = new [] {typeof(TestModelA), typeof(TestModelB)};
                 ModelValidator.ValidateDuplicates(tables);
                 Assert.IsTrue(true);
             }
@@ -50,7 +47,7 @@ namespace Tests.ValidatorTests
         {
             try
             {
-                var tables = new Type[] { typeof(TestModelA), typeof(TestModelC) };
+                var tables = new [] { typeof(TestModelA), typeof(TestModelC) };
                 ModelValidator.ValidateDuplicates(tables);
                 Assert.IsTrue(false);
             }

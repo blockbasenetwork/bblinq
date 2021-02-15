@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
@@ -16,69 +15,69 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <summary>
         /// Checks if a foreign key is valid
         /// </summary>
-        /// <param name="type">the model type</param>
-        /// <param name="types">a list of types to compare</param>
         public static void Validate(Type type, List<Type> types)
         {
             var foreignKeyProperties = type.GetForeignKeyProperties();
-            if(!foreignKeyProperties.Equals(default))
+            if (foreignKeyProperties == null || foreignKeyProperties.Length == 0)
             {
-                foreach (var foreignKeyProperty in foreignKeyProperties)
-                {
-                    var foreignKey = foreignKeyProperty.GetForeignKey();
-                    ValidateForeignKeyState(type, foreignKeyProperty, foreignKey);
-                    ValidateForeignKeyExistence(type, foreignKeyProperty, types);
-                }
+                return;
+            }
+            foreach (var foreignKeyProperty in foreignKeyProperties)
+            {
+                var foreignKey = foreignKeyProperty.GetForeignKeys()[0];
+                ValidateForeignKeyState(type, foreignKeyProperty, foreignKey);
+                ValidateForeignKeyExistence(type, foreignKeyProperty, foreignKey, types);
+                ValidateForeignKeyType(type, foreignKeyProperty, foreignKey, types);
             }
         }
 
         /// <summary>
         /// Checks if a foreign key state is valid
         /// </summary>
-        /// <param name="type">the model type</param>
-        /// <param name="foreignKeyProperty">the property that has a foreign key</param>
-        /// <param name="foreignKey">the attribute that has the foreign key data</param>
         private static void ValidateForeignKeyState(MemberInfo type, MemberInfo foreignKeyProperty, ForeignKeyAttribute foreignKey)
         {
-            var regex = new Regex("([^(A-Za-z_0-9)])");
 
-            if(foreignKey.Parent == null && string.IsNullOrEmpty(foreignKey.ParentName))
+            if(foreignKey.Parent == null)
             {
-                throw new InvalidParentTypeException(type.Name, foreignKeyProperty.Name);
-            }
-
-            if (regex.IsMatch(foreignKey.ParentName))
-            {
-                throw new InvalidParentTypeException(type.Name, foreignKey.ParentName);
+                throw new NoParentSetException(type.Name, foreignKeyProperty.Name);
             }
         }
 
         /// <summary>
-        /// Checks if a foreign key state is valid
+        /// Checks if the parent key exists
         /// </summary>
-        /// <param name="type">the model type</param>
-        /// <param name="property">the property that has a foreign key</param>
-        /// <param name="types">a list of types that could have the parent class</param>
-        private static void ValidateForeignKeyExistence(MemberInfo type, PropertyInfo property, IEnumerable<Type> types)
+        private static void ValidateForeignKeyExistence(MemberInfo type, PropertyInfo property, ForeignKeyAttribute foreignKey, IEnumerable<Type> types)
         {
-            var foreignKey = property.GetForeignKey();
-            foreach (var temporaryType in types)
+            foreach (var parent in types)
             {
-                if(temporaryType.Name == foreignKey.ParentName || temporaryType == foreignKey.Parent || temporaryType.GetTableName() == foreignKey.ParentName)
+                if (parent == foreignKey.Parent)
                 {
                     return;
                 }
             }
-            if(foreignKey.Parent != null)
-            {
-                throw new InvalidParentTypeException(type.Name, foreignKey.Parent.Name);
-            }
-            else
-            {
-                throw new InvalidParentTypeException(type.Name, foreignKey.ParentName);
-            }
+            throw new InvalidParentTypeException(type.Name, property.Name, foreignKey.Parent.Name);
         }
 
-
+        /// <summary>
+        /// Checks if the parent primary key has the same type as the foreign key
+        /// </summary>
+        private static void ValidateForeignKeyType(MemberInfo type, PropertyInfo property, ForeignKeyAttribute foreignKey, IEnumerable<Type> types)
+        {
+            foreach (var parent in types)
+            {
+                if (parent == foreignKey.Parent)
+                {
+                    var primaryKey = parent.GetPrimaryKeyProperties();
+                    if (primaryKey != null && primaryKey.Length > 0)
+                    {
+                        if (property.PropertyType == primaryKey[0])
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            throw new InvalidForeignKeyTypeException(type.Name, property.Name, foreignKey.Parent.Name, property.PropertyType.Name);
+        }
     }
 }

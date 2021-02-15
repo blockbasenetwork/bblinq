@@ -7,14 +7,14 @@ namespace BlockBase.BBLinq.Exceptions
     public class InvalidParentTypeException : Exception
     {
 
-        private static string GenerateErrorMessage(string typeName, string parentType)
+        private static string GenerateErrorMessage(string typeName, string propertyName, string parentType)
         {
-            var errorMessage = $"The type {parentType} associated to a foreign key on {typeName} does not belong to the model or does not exist. ";
+            var errorMessage = $"The type {parentType} associated to a foreign key {propertyName} on {typeName} does not belong to the model or does not exist. ";
             return errorMessage;
         }
 
 
-        public InvalidParentTypeException(string typeName, string parentType) : base(GenerateErrorMessage(typeName, parentType))
+        public InvalidParentTypeException(string typeName, string propertyName, string parentType) : base(GenerateErrorMessage(typeName, propertyName, parentType))
         {
         }
 

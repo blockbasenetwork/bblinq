@@ -3,8 +3,8 @@
 namespace BlockBase.BBLinq.Annotations
 {
     
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple =false,Inherited =false)]
-    public class RangeAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class RangeAttribute : BlockBaseAnnotationAttribute
     {
         public RangeAttribute(int minimum, int maximum, int buckets = 1)
         {

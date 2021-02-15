@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests.ValidatorTests
 {
+    #region Correct combo
     [Table("cc")]
     public class AaClass
     {
-        [Key]
+        [PrimaryKey]
         public Guid Id { get; set; }
 
         [Column("name")]
@@ -25,12 +24,26 @@ namespace Tests.ValidatorTests
 
     public class BbClass
     {
-        [Key]
+        [PrimaryKey]
         public int Id { get; set; }
 
         [Encrypted]
         public string Content { get; set; }
+
+
+        [Encrypted(4)]
+        public string ContentB { get; set; }
     }
+
+    #endregion
+
+    #region Duplicate Columns
+
+    #endregion
+
+    #region Wrong Named Columns
+
+    #endregion
 
     [TestClass]
     public class FullModelTests

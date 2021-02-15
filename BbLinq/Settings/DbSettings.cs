@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BlockBase.BBLinq.Settings
+﻿namespace BlockBase.BBLinq.Settings
 {
     /// <summary>
     /// Settings for a basic database connection

@@ -8,18 +8,21 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
     public static class EncryptedValidator
     {
+        private const int MinimumBuckets = 0;
         public static void Validate(Type type, PropertyInfo property)
         {
-            var encryptedAttribute = property.GetEncrypted();
-            if(encryptedAttribute != null)
+            var encryptedAttributes = property.GetEncrypted();
+            if(encryptedAttributes == null || encryptedAttributes.Length < 1)
             {
-                ValidateBucket(type, property, encryptedAttribute);
+                return;
             }
+            var encrypted = encryptedAttributes[0];
+            ValidateBucket(type, property, encrypted);
         }
 
         public static void ValidateBucket(Type type, PropertyInfo property, EncryptedAttribute encrypted)
         {
-            if (encrypted.Buckets < 0)
+            if (encrypted.Buckets < MinimumBuckets)
             {
                 throw new InvalidBucketException(type.Name, property.Name, encrypted.Buckets);
             }
