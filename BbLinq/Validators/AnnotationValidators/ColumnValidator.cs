@@ -1,7 +1,7 @@
-﻿using System;
-using System.Reflection;
-using BlockBase.BBLinq.Exceptions;
+﻿using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
+using System;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
@@ -16,13 +16,13 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         public static void Validate(Type type, PropertyInfo property)
         {
             var columnAttribute = property.GetColumnName();
-            if(columnAttribute != null)
+            if (columnAttribute != null)
             {
                 ValidateNameForWrongCharacters(type, property, columnAttribute);
             }
         }
 
-        
+
         /// <summary>
         /// Checks if a column has an appropriate name
         /// </summary>
@@ -33,6 +33,6 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
                 throw new InvalidColumnNameException(type.Name, property.PropertyType.Name, columnName);
             }
         }
-        
+
     }
 }

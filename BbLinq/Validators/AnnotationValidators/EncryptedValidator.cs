@@ -12,7 +12,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         public static void Validate(Type type, PropertyInfo property)
         {
             var encryptedAttributes = property.GetEncrypted();
-            if(encryptedAttributes == null || encryptedAttributes.Length < 1)
+            if (encryptedAttributes == null || encryptedAttributes.Length < 1)
             {
                 return;
             }

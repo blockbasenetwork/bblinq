@@ -29,6 +29,7 @@ namespace BlockBase.BBLinq.Pocos
             var encrypted = property.GetEncrypted();
             var foreignKeys = property.GetForeignKeys();
             var ranges = property.GetRanges();
+            var propertyType = property.IsNullable() ? property.PropertyType.GetNullableType() : property.PropertyType;
 
             var field = new BlockBaseColumn
             {
@@ -40,14 +41,14 @@ namespace BlockBase.BBLinq.Pocos
                 IsNotNull = property.IsNotNull(),
             };
 
-            if (field.IsRange)
+            if (field.IsRange && ranges != null)
             {
                 field.BucketCount = ranges[0].Buckets;
                 field.MaxRange = ranges[0].Maximum;
                 field.MinRange = ranges[0].Minimum;
             }
 
-            if (field.IsEncrypted)
+            if (field.IsEncrypted && encrypted != null)
             {
                 field.BucketCount = encrypted[0].Buckets;
             }
@@ -55,7 +56,7 @@ namespace BlockBase.BBLinq.Pocos
             field.HasBuckets = field.BucketCount > 0;
 
 
-            if (field.IsForeignKey)
+            if (field.IsForeignKey && foreignKeys != null)
             {
                 var fkConstraint = foreignKeys[0];
                 field.ForeignTable = fkConstraint.Parent.GetTableName();
@@ -66,15 +67,7 @@ namespace BlockBase.BBLinq.Pocos
             if (field.IsEncrypted && field.BucketCount > 0)
                 field.Type = BbSqlDataTypeEnum.Encrypted;
             else
-                field.Type = property.PropertyType.ToBbSqlType();
-
-            if (field.IsRange)
-            {
-                field.MinRange = ranges[0].Minimum;
-                field.MaxRange = ranges[0].Maximum;
-                field.BucketCount = ranges[0].Buckets;
-            }
-
+                field.Type = propertyType.ToBbSqlType();
             return field;
         }
     }

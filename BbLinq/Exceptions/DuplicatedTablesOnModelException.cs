@@ -10,7 +10,7 @@ namespace BlockBase.BBLinq.Exceptions
         private static string GenerateErrorMessage(IEnumerable<(string, string)> entities)
         {
             var errorMessage = "The model has one or more duplicated tables. Check the following:\n Entity  -> Table";
-            foreach(var (entity, table) in entities)
+            foreach (var (entity, table) in entities)
             {
                 errorMessage += $"{entity} -> {table}";
             }

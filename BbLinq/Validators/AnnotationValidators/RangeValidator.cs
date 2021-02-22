@@ -1,8 +1,8 @@
-﻿using System;
-using System.Reflection;
-using BlockBase.BBLinq.Annotations;
+﻿using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
+using System;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
@@ -35,7 +35,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <param name="range">the range attribute</param>
         public static void ValidateBucket(Type type, PropertyInfo property, RangeAttribute range)
         {
-            if(range.Buckets < 1)
+            if (range.Buckets < 1)
             {
                 throw new InvalidBucketException(type.Name, property.Name, range.Buckets);
             }
@@ -49,7 +49,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// <param name="range">the range attribute</param>
         public static void ValidateRange(Type type, PropertyInfo property, RangeAttribute range)
         {
-            if(range.Minimum > range.Maximum)
+            if (range.Minimum > range.Maximum)
             {
                 throw new InvalidRangeException(type.Name, property.Name, range.Minimum, range.Maximum);
             }

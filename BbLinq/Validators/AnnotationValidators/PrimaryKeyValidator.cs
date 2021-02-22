@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BlockBase.BBLinq.Exceptions;
+using BlockBase.BBLinq.ExtensionMethods;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BlockBase.BBLinq.Exceptions;
-using BlockBase.BBLinq.ExtensionMethods;
 
 namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
@@ -56,16 +56,16 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         private static void ValidatePrimaryKeyType(PropertyInfo property)
         {
 
-            foreach(var acceptableType in AcceptableTypes)
+            foreach (var acceptableType in AcceptableTypes)
             {
-                if(property.PropertyType == acceptableType)
+                if (property.PropertyType == acceptableType)
                 {
                     return;
                 }
             }
             var acceptableTypes = new string[AcceptableTypes.Length];
 
-            for(var counter = 0; counter < acceptableTypes.Length; counter++)
+            for (var counter = 0; counter < acceptableTypes.Length; counter++)
             {
                 acceptableTypes[counter] = AcceptableTypes[counter].Name;
             }
@@ -73,6 +73,6 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
             throw new InvalidPrimaryKeyTypeException(property.Name, acceptableTypes);
         }
 
-        
+
     }
 }

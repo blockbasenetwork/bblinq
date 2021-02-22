@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace BlockBase.BBLinq.Exceptions
 {
@@ -18,18 +17,6 @@ namespace BlockBase.BBLinq.Exceptions
 
 
         public DuplicatedColumnsOnTableException(string typeName, (string, string)[] columns) : base(GenerateErrorMessage(typeName, columns))
-        {
-        }
-
-        public DuplicatedColumnsOnTableException(string message) : base(message)
-        {
-        }
-
-        public DuplicatedColumnsOnTableException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected DuplicatedColumnsOnTableException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

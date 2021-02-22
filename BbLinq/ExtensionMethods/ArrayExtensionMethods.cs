@@ -44,7 +44,7 @@ namespace BlockBase.BBLinq.ExtensionMethods
 
             foreach (var type in array)
             {
-                if(!type.Equals(default(T)))
+                if (!type.Equals(default(T)))
                 {
                     return false;
                 }

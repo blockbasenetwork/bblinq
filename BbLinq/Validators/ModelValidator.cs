@@ -30,15 +30,15 @@ namespace BlockBase.BBLinq.Validators
             (string, string)[] entityNames;
 
             {
-                var tableNames = new List<(string,string)>();
+                var tableNames = new List<(string, string)>();
                 foreach (var entity in model)
                 {
                     tableNames.Add((entity.Name, entity.GetTableName()));
                 }
                 entityNames = tableNames.ToArray();
             }
-            
-            var duplicates = entityNames.FindDuplicates((s1, s2)=>s1.Item2 == s2.Item2);
+
+            var duplicates = entityNames.FindDuplicates((s1, s2) => s1.Item2 == s2.Item2);
             if (!duplicates.IsNullOrEmpty())
             {
                 throw new DuplicatedTablesOnModelException(entityNames);

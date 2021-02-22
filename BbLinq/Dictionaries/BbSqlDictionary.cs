@@ -1,6 +1,6 @@
 ﻿namespace BlockBase.BBLinq.Dictionaries
 {
-    public sealed class BbSqlDictionary : BaseSqlDictionary
+    public class BbSqlDictionary : BaseSqlDictionary
     {
         public string AllSelector => "*";
         public string DifferentFrom => "!=";
@@ -20,5 +20,9 @@
         public string PrimaryKey => "PRIMARY KEY";
         public string References => "REFERENCES";
         public string NonEncryptedColumn => "!";
+        public string If => "IF";
+        public string Execute => "EXECUTE";
+        public string QueryBatchWrapperLeft => "{";
+        public string QueryBatchWrapperRight => "}";
     }
 }

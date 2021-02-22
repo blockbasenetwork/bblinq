@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace BlockBase.BBLinq.Exceptions
 {
@@ -12,15 +11,7 @@ namespace BlockBase.BBLinq.Exceptions
             return errorMessage;
         }
 
-        public NoPrimaryKeyFoundException(string typeName) : base(GenerateErrorMessage(typeName)) 
-        {
-        }
-
-        public NoPrimaryKeyFoundException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected NoPrimaryKeyFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+        public NoPrimaryKeyFoundException(string typeName) : base(GenerateErrorMessage(typeName))
         {
         }
     }

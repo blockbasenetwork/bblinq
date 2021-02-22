@@ -1,4 +1,6 @@
-﻿namespace BlockBase.BBLinq.Settings
+﻿using BlockBase.BBLinq.Settings.Base;
+
+namespace BlockBase.BBLinq.Settings
 {
     /// <summary>
     /// Settings for a BlockBase node

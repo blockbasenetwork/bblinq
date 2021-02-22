@@ -1,8 +1,7 @@
-﻿using System;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using BlockBase.BBLinq.Exceptions;
+﻿using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
+using System;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
@@ -28,7 +27,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         /// </summary>
         private static void ValidateNameForWrongCharacters(MemberInfo type, string tableName)
         {
-            if(tableName.HasNonAlphanumericOrUnderscore())
+            if (tableName.HasNonAlphanumericOrUnderscore())
             {
                 throw new InvalidTableNameException(type.Name, tableName);
             }

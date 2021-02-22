@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using BlockBase.BBLinq.Annotations;
+﻿using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Validators.AnnotationValidators
 {
@@ -37,7 +37,7 @@ namespace BlockBase.BBLinq.Validators.AnnotationValidators
         private static void ValidateForeignKeyState(MemberInfo type, MemberInfo foreignKeyProperty, ForeignKeyAttribute foreignKey)
         {
 
-            if(foreignKey.Parent == null)
+            if (foreignKey.Parent == null)
             {
                 throw new NoParentSetException(type.Name, foreignKeyProperty.Name);
             }

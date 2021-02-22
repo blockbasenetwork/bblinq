@@ -10,14 +10,14 @@ namespace BlockBase.BBLinq.Exceptions
         private static string GenerateErrorMessage(string typeName, List<string> primaryKeys)
         {
             var errorMessage = $"The type {typeName} has too many primary keys.\n";
-            foreach(var key in primaryKeys)
+            foreach (var key in primaryKeys)
             {
                 errorMessage += $"{key}\n";
             }
             return errorMessage;
         }
 
-        public TooManyPrimaryKeysException(string typeName, List<string> primaryKeys) : base (GenerateErrorMessage(typeName, primaryKeys))
+        public TooManyPrimaryKeysException(string typeName, List<string> primaryKeys) : base(GenerateErrorMessage(typeName, primaryKeys))
         {
         }
 

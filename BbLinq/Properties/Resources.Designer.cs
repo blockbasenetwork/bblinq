@@ -59,5 +59,41 @@ namespace BlockBase.BBLinq.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} was added to the batch..
+        /// </summary>
+        internal static string CACHE_ADDED_TO_BATCH {
+            get {
+                return ResourceManager.GetString("CACHE_ADDED_TO_BATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to executor.
+        /// </summary>
+        internal static string CACHE_EXECUTOR {
+            get {
+                return ResourceManager.GetString("CACHE_EXECUTOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to queries.
+        /// </summary>
+        internal static string CACHE_QUERIES {
+            get {
+                return ResourceManager.GetString("CACHE_QUERIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to settings.
+        /// </summary>
+        internal static string CACHE_SETTINGS {
+            get {
+                return ResourceManager.GetString("CACHE_SETTINGS", resourceCulture);
+            }
+        }
     }
 }

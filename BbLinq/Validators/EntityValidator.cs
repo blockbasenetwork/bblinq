@@ -1,9 +1,9 @@
 ﻿using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Validators.AnnotationValidators;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BlockBase.BBLinq.Validators.AnnotationValidators;
 
 namespace BlockBase.BBLinq.Validators
 {

@@ -2,7 +2,7 @@
 
 namespace BlockBase.BBLinq.Annotations
 {
-    
+
     [AttributeUsage(AttributeTargets.Property)]
     public class RangeAttribute : BlockBaseAnnotationAttribute
     {
@@ -16,12 +16,12 @@ namespace BlockBase.BBLinq.Annotations
         /// <summary>
         /// The minimum range value
         /// </summary>
-        public int Minimum{ get; set; }
+        public int Minimum { get; set; }
 
         /// <summary>
         /// The maximum range value
         /// </summary>
-        public int Maximum{ get; set; }
+        public int Maximum { get; set; }
 
         /// <summary>
         /// The number of buckets
