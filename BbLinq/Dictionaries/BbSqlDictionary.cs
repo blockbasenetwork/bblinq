@@ -1,7 +1,13 @@
-﻿namespace BlockBase.BBLinq.Dictionaries
+﻿using BlockBase.BBLinq.Dictionaries.Base;
+
+namespace BlockBase.BBLinq.Dictionaries
 {
     public class BbSqlDictionary : BaseSqlDictionary
     {
+        public string Begin => "BEGIN";
+        public string Transaction => "TRANSACTION";
+        public string Commit => "COMMIT";
+        public string Rollback => "ROLLBACK";
         public string AllSelector => "*";
         public string DifferentFrom => "!=";
         public string QueryEnd => ";";
@@ -24,5 +30,6 @@
         public string Execute => "EXECUTE";
         public string QueryBatchWrapperLeft => "{";
         public string QueryBatchWrapperRight => "}";
+        public string NotNull => "NOT NULL";
     }
 }

@@ -1,141 +1,375 @@
-﻿using BlockBase.BBLinq.Exceptions;
-using BlockBase.BBLinq.Pocos.ExpressionParser;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using BlockBase.BBLinq.Enumerables;
+using BlockBase.BBLinq.Exceptions;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Pocos.Nodes;
 
 namespace BlockBase.BBLinq.Parsers
 {
-    public static class ExpressionParser
+    public class ExpressionParser
     {
-        private static readonly Dictionary<ExpressionType, ExpressionOperator> AvailableOperators =
-            new Dictionary<ExpressionType, ExpressionOperator>()
-            {
-                {ExpressionType.And, ExpressionOperator.And},
-                {ExpressionType.AndAlso, ExpressionOperator.And},
-
-                {ExpressionType.Or, ExpressionOperator.Or},
-                {ExpressionType.OrElse, ExpressionOperator.Or},
-
-                {ExpressionType.Equal, ExpressionOperator.Equals},
-
-                {ExpressionType.GreaterThan, ExpressionOperator.GreaterThan},
-                {ExpressionType.GreaterThanOrEqual, ExpressionOperator.GreaterOrEqualTo},
-
-                {ExpressionType.LessThan, ExpressionOperator.LessThan},
-                {ExpressionType.LessThanOrEqual, ExpressionOperator.LessThan},
-            };
-
-        public static ExpressionNode ParseExpression(Expression expression)
+        private IReadOnlyCollection<ParameterExpression> _parameters;
+        public ExpressionNode ParseExpression(Expression expression)
         {
-            if (expression is LambdaExpression exp)
+            if (!IsAcceptableOperation(expression))
             {
-                expression = exp.Body;
+                throw new UnavailableExpressionException(expression);
             }
-            var parseResult = ParseExpressionToken(expression);
-            return parseResult;
-        }
-
-        private static ExpressionNode ParseExpressionToken(Expression expression)
-        {
-            switch (expression.NodeType)
+            if (expression.NodeType == ExpressionType.ArrayIndex && expression is BinaryExpression binaryArrayExpression)
             {
-                case ExpressionType.Constant:
-                    return ParseConstantExpression(expression as ConstantExpression);
-                case ExpressionType.MemberAccess:
-                    return ParseMemberAccessExpression((expression as MemberExpression));
-            }
-            if (expression is BinaryExpression binExpression)
-            {
-                var operatorExists = AvailableOperators.ContainsKey(binExpression.NodeType);
-                if (!operatorExists)
+                var arrayNode = ParseMemberExpression(binaryArrayExpression.Left as MemberExpression);
+                var indexNode = ParseExpression(binaryArrayExpression.Right);
+                if (arrayNode is ValueNode {Value: Array array} && 
+                    indexNode is ValueNode {Value: int index})
                 {
-                    return ExecuteExpression(binExpression);
+                    return new ValueNode(array.GetValue(index));
                 }
-                return ParseBinaryExpression(binExpression);
             }
-            if (expression is UnaryExpression unExpression)
+
+            switch (expression)
             {
-                return ParseUnaryExpression(unExpression);
+                case MethodCallExpression methodCallExpression:
+                    return ParseCallExpression(methodCallExpression);
+                case LambdaExpression lambdaExpression:
+                    _parameters = lambdaExpression.Parameters;
+                    return ParseExpression(lambdaExpression.Body);
+                case BinaryExpression binaryExpression:
+                    return ParseBinaryExpression(binaryExpression);
+                case UnaryExpression unaryExpression:
+                    return ParseUnaryExpression(unaryExpression);
+                case ConstantExpression constantExpression:
+                    return new ValueNode(constantExpression.Value);
+                case MemberExpression memberExpression:
+                    return ParseMemberExpression(memberExpression);
             }
-            throw new InvalidExpressionException(expression);
+            throw new UnavailableExpressionException(expression);
         }
 
-        private static ExpressionNode ParseUnaryExpression(Expression expression)
+        private ExpressionNode ParseCallExpression(MethodCallExpression methodCallExpression)
         {
-            return ExecuteExpression(expression);
-        }
-
-        private static ValueExpression ParseConstantExpression(ConstantExpression expression)
-        {
-            return ExecuteExpression(expression) as ValueExpression;
-        }
-
-        private static ExpressionNode ExecuteExpression(Expression expression)
-        {
-            try
+            var method = methodCallExpression.Method;
+            var objectExpression = methodCallExpression.Object;
+            switch (objectExpression)
             {
-                var executionResult= Expression.Lambda(expression).Compile().DynamicInvoke();
-                if (executionResult is Expression exp)
+                case MemberExpression memberObjectExpression:
+                    var valueNode = GetValue(memberObjectExpression);
+                    if (valueNode == null)
+                    {
+                        throw new UnavailableExpressionException(methodCallExpression);
+                    }
+                    var res = method.Invoke(valueNode, new object[] { });
+                    return new ValueNode(res);
+                case ConstantExpression constantObjectExpression:
+                    var result = method.Invoke(constantObjectExpression.Value, new object[] { });
+                    return new ValueNode(result);
+            }
+            throw new UnavailableExpressionException(methodCallExpression);
+        }
+
+        private ExpressionNode ParseMemberExpression(MemberExpression memberExpression)
+        {
+            if (_parameters.Contains(memberExpression.Expression))
+            {
+                return new PropertyNode(memberExpression.Member as PropertyInfo);
+            }
+            var value = GetValue(memberExpression);
+            return new ValueNode(value);
+        }
+
+        private object GetValue(MemberExpression expression)
+        {
+            switch (expression.Expression)
+            {
+                case ConstantExpression constantExpression:
+                    return GetValue(constantExpression.Value, expression.Member);
+                case MemberExpression innerMemberExpression:
                 {
-                    if (exp.NodeType != expression.NodeType)
+                    var value = GetValue(innerMemberExpression);
+                    if (value != null)
                     {
-                        return ParseExpressionToken(exp);
+                        return GetValue(value, expression.Member);
                     }
-                    var availableOperations = new List<string>();
-                    foreach (var item in AvailableOperators)
-                    {
-                        availableOperations.Add($"{item.Key} - {item.Value}");
-                    }
-                    throw new UnavailableOperatorException(exp.NodeType.ToString(), availableOperations.ToArray());
+                    break;
                 }
-                if (executionResult != null)
-                {
-                    return new ValueExpression() { Value = executionResult };
-                }
-                throw new InvalidExpressionException(expression);
-            }
-            catch (Exception)
-            {
-                throw new InvalidExpressionException(expression);
-            }
-        }
-
-        private static ExpressionNode ParseMemberAccessExpression(MemberExpression expression)
-        {
-            var innerExpression = expression.Expression;
-            switch (innerExpression.NodeType)
-            {
-                case ExpressionType.Constant:
-                    var result = ExecuteExpression(expression);
-                    return new ValueExpression() { Value = result };
-                case ExpressionType.Parameter:
-                    var table = innerExpression.Type;
-                    var columnName = expression.Member.Name;
-                    var column = table.GetProperty(columnName);
-                    if (column == null)
-                    {
-                        throw new Exception();
-                    }
-                    return new PropertyExpression() { Table = table, Column = column };
             }
             return null;
         }
 
-
-        private static BinaryExpressionNode ParseBinaryExpression(BinaryExpression expression)
+        public object GetValue(object origin, object accessor)
         {
-            var @operator = AvailableOperators[expression.NodeType];
-
-            var left = ParseExpressionToken(expression.Left);
-            var right = ParseExpressionToken(expression.Right);
-            return new BinaryExpressionNode()
+            return accessor switch
             {
-                Left = left,
-                Right = right,
-                Operator = @operator
+                PropertyInfo property when property != null => property.GetValue(origin),
+                FieldInfo field when field != null => field.GetValue(origin),
+                _ => null
             };
         }
 
+        private ExpressionNode ParseBinaryExpression(BinaryExpression binaryExpression)
+        {
+            var @operator = ParseExpressionOperator(binaryExpression.NodeType);
+            var left = ParseExpression(binaryExpression.Left);
+            var right = ParseExpression(binaryExpression.Right);
+            if (IsArithmeticOperator(binaryExpression))
+            {
+                throw new UnavailableArithmeticOperationException(binaryExpression);
+            }
+            if (IsComparisonOperator(binaryExpression))
+            {
+                return new ComparisonNode(@operator, left, right);
+            }
+            if (IsLogicOperator(binaryExpression))
+            {
+                return new LogicNode(@operator, left, right);
+            }
+            throw new UnavailableExpressionException(binaryExpression);
+        }
+
+        private ExpressionNode ParseUnaryExpression(UnaryExpression unaryExpression)
+        {
+            var operand = unaryExpression.Operand;
+            var expressionValue = ParseMemberExpression(operand as MemberExpression);
+            if (expressionValue is PropertyNode propertyNode)
+            {
+                switch (unaryExpression.NodeType)
+                {
+                    case ExpressionType.Not:
+                        return new ComparisonNode(BlockBaseOperator.DifferentFrom, propertyNode, new ValueNode(true));
+                }
+            }
+            if (expressionValue is ValueNode valueNode)
+            {
+                switch (unaryExpression.NodeType)
+                {
+                    case ExpressionType.ArrayLength when valueNode.Value is Array array:
+                        return new ValueNode(array.Length);
+                    case ExpressionType.Convert:
+                    case ExpressionType.ConvertChecked:
+                        return new ValueNode(Convert.ChangeType(valueNode.Value, unaryExpression.Type));
+                    case ExpressionType.Negate:
+                    case ExpressionType.NegateChecked:
+                        var result = valueNode.Value.ToString();
+                        if (result != null)
+                        {
+                            return new ValueNode(-1 * double.Parse(result));
+                        }
+                        break;
+                    case ExpressionType.Not:
+                        
+                        break;
+                    case ExpressionType.UnaryPlus:
+                        return new ValueNode(valueNode.Value);
+                }
+            }
+            throw new UnavailableExpressionException(unaryExpression);
+        }
+
+        private bool IsAcceptableOperation(Expression expression)
+        {
+            var @operator = expression.NodeType;
+            return
+                @operator == ExpressionType.Call ||
+                @operator == ExpressionType.Convert ||
+                @operator == ExpressionType.ConvertChecked ||
+                @operator == ExpressionType.ArrayLength ||
+                @operator == ExpressionType.ArrayIndex ||
+                @operator == ExpressionType.Constant ||
+                @operator == ExpressionType.Lambda ||
+                @operator == ExpressionType.UnaryPlus ||
+                @operator == ExpressionType.MemberAccess ||
+                @operator == ExpressionType.Negate ||
+                @operator == ExpressionType.NegateChecked ||
+                @operator == ExpressionType.Not ||
+                @operator == ExpressionType.IsTrue ||
+                @operator == ExpressionType.IsFalse ||
+                IsArithmeticOperator(expression) ||
+                IsLogicOperator(expression) ||
+                IsComparisonOperator(expression);
+        }
+
+        private bool IsArithmeticOperator(Expression expression)
+        {
+            var @operator = expression.NodeType;
+            return
+                @operator == ExpressionType.Add ||
+                @operator == ExpressionType.AddChecked ||
+                @operator == ExpressionType.Divide ||
+                @operator == ExpressionType.Modulo ||
+                @operator == ExpressionType.Multiply ||
+                @operator == ExpressionType.MultiplyChecked ||
+                @operator == ExpressionType.Power ||
+                @operator == ExpressionType.Subtract ||
+                @operator == ExpressionType.SubtractChecked;
+        }
+
+        private bool IsComparisonOperator(Expression expression)
+        {
+            var @operator = expression.NodeType;
+            return
+                @operator == ExpressionType.Equal ||
+                @operator == ExpressionType.GreaterThan || 
+                @operator == ExpressionType.LessThan ||
+                @operator == ExpressionType.LessThanOrEqual ||
+                @operator == ExpressionType.GreaterThanOrEqual ||
+                @operator == ExpressionType.NotEqual;
+        }
+
+        private bool IsLogicOperator(Expression expression)
+        {
+            var @operator = expression.NodeType;
+            return
+                @operator == ExpressionType.And ||
+                @operator == ExpressionType.AndAlso ||
+                @operator == ExpressionType.Or ||
+                @operator == ExpressionType.OrElse;
+        }
+
+        private BlockBaseOperator ParseExpressionOperator(ExpressionType @operator)
+        {
+            switch (@operator)
+            {
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                    return BlockBaseOperator.Add;
+                case ExpressionType.Divide:
+                    return BlockBaseOperator.Divide;
+                case ExpressionType.Modulo:
+                    return BlockBaseOperator.Modulo;
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                    return BlockBaseOperator.Multiply;
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                    return BlockBaseOperator.Subtract;
+                case ExpressionType.Power:
+                    return BlockBaseOperator.Power;
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                    return BlockBaseOperator.And;
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                    return BlockBaseOperator.Or;
+                case ExpressionType.LessThan:
+                    return BlockBaseOperator.LessThan;
+                case ExpressionType.LessThanOrEqual:
+                    return BlockBaseOperator.LessOrEqualTo;
+                case ExpressionType.GreaterThan:
+                    return BlockBaseOperator.GreaterThan;
+                case ExpressionType.GreaterThanOrEqual:
+                    return BlockBaseOperator.GreaterOrEqualTo;
+                case ExpressionType.Equal:
+                    return BlockBaseOperator.EqualTo;
+                case ExpressionType.NotEqual:
+                    return BlockBaseOperator.DifferentFrom;
+                default:
+                    return BlockBaseOperator.Unknown;
+            }
+        }
+
+        public (ExpressionNode, bool) Reduce(ExpressionNode node, int depth = 0)
+        {
+            switch (node)
+            {
+                case ValueNode valueNode:
+                    var valueResult = ReduceValueNode(valueNode, depth);
+                    return valueResult;
+                case PropertyNode propertyNode:
+                    var propertyResult = ReducePropertyNode(propertyNode, depth);
+                    return propertyResult;
+                case ComparisonNode comparisonNode:
+                    var comparisonResult = ReduceComparisonNode(comparisonNode, depth);
+                    return comparisonResult;
+                case LogicNode logicNode:
+                    var logicResult = ReduceLogicNode(logicNode, depth);
+                    return logicResult;
+            }
+            throw new InvalidExpressionNodeException(node);
+        }
+
+        private (ExpressionNode, bool) ReduceValueNode(ValueNode node, int depth)
+        {
+            if (depth == 0)
+            {
+                throw new InvalidExpressionNodeException(node);
+            }
+            return (node, false);
+        }
+
+        private (ExpressionNode, bool) ReducePropertyNode(PropertyNode node, int depth)
+        {
+            if (depth != 0) return (node, false);
+            if (node.Property.PropertyType == typeof(bool))
+            {
+                return (new ComparisonNode(BlockBaseOperator.EqualTo, node, new ValueNode(true)), true);
+            }
+            throw new InvalidExpressionNodeException(node);
+        }
+
+        private (ExpressionNode, bool) ReduceComparisonNode(ComparisonNode node, int depth)
+        {
+            if (node.LeftNode is ValueNode && node.RightNode is ValueNode)
+            {
+                throw new InvalidExpressionNodeException(node);
+            }
+            var reducedLeft = Reduce(node.LeftNode, depth + 1);
+            var reducedRight = Reduce(node.RightNode, depth + 1);
+            var hasChanges = reducedRight.Item2 || reducedLeft.Item2;
+            return hasChanges ? ReduceComparisonNode(new ComparisonNode(node.Operator, reducedLeft.Item1, reducedRight.Item1), depth) : (node, false);
+        }
+
+
+        private (ExpressionNode, bool) ReduceLogicNode(LogicNode node, int depth)
+        {
+            (ExpressionNode, bool) left = (null, false);
+            (ExpressionNode, bool) right = (null, false);
+
+            if (node.LeftNode is ValueNode || node.RightNode is ValueNode)
+            {
+                throw new InvalidExpressionNodeException(node);
+            }
+
+
+            if (node.LeftNode is PropertyNode propertyLeft && propertyLeft.Property.PropertyType == typeof(bool))
+            {
+                left = (new ComparisonNode(BlockBaseOperator.EqualTo, node.LeftNode, new ValueNode(true)), true);
+            }
+            else if (node.LeftNode is LogicNode logicNode)
+            {
+                left = ReduceLogicNode(logicNode, depth + 1);
+            }
+            else if (node.LeftNode is ComparisonNode comparisonNode)
+            {
+                left = ReduceComparisonNode(comparisonNode, depth + 1);
+            }
+
+
+            if (node.RightNode is PropertyNode propertyRight && propertyRight.Property.PropertyType == typeof(bool))
+            {
+                right = (new ComparisonNode(BlockBaseOperator.EqualTo, node.LeftNode, new ValueNode(true)), true);
+            }
+            else if (node.RightNode is LogicNode logicNode)
+            {
+                right = ReduceLogicNode(logicNode, depth + 1);
+            }
+            else if (node.RightNode is ComparisonNode comparisonNode)
+            {
+                right = ReduceComparisonNode(comparisonNode, depth + 1);
+            }
+
+            if (left.Item1 != null && right.Item1 != null)
+            {
+                if (left.Item2 || right.Item2)
+                {
+                    return ReduceLogicNode(new LogicNode(node.Operator, left.Item1, right.Item1), depth);
+                }
+                return (node, false);
+            }
+            throw new InvalidExpressionNodeException(node);
+
+        }
     }
 }

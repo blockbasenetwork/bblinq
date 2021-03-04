@@ -1,5 +1,4 @@
-﻿using BlockBase.BBLinq.Annotations;
-using BlockBase.BBLinq.Exceptions;
+﻿using BlockBase.BBLinq.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

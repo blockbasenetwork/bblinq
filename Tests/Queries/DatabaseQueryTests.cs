@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BlockBase.BBLinq.Annotations;
 using BlockBase.BBLinq.Queries.BlockBaseQueries;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
