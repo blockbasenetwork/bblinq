@@ -3,7 +3,7 @@ using BlockBase.BBLinq.Queries.Base;
 
 namespace BlockBase.BBLinq.Queries.StructureQueries
 {
-    public class BlockBaseDropDatabaseQuery : IQuery
+    public class BlockBaseDropDatabaseQuery : BlockBaseQuery, IQuery
     {
         public string DatabaseName { get; }
 

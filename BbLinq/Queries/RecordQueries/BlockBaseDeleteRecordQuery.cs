@@ -9,7 +9,7 @@ using BlockBase.BBLinq.Queries.Base;
 
 namespace BlockBase.BBLinq.Queries.RecordQueries
 {
-    public class BlockBaseDeleteRecordQuery<T> : IQuery
+    public class BlockBaseDeleteRecordQuery<T> : BlockBaseQuery, IQuery
     {
         public T Record { get; }
 

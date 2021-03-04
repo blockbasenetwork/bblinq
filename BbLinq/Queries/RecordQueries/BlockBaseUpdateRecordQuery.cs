@@ -11,7 +11,7 @@ using BlockBase.BBLinq.Queries.Base;
 
 namespace BlockBase.BBLinq.Queries.RecordQueries
 {
-    public class BlockBaseUpdateRecordQuery<T> : IQuery
+    public class BlockBaseUpdateRecordQuery<T> : BlockBaseQuery, IQuery
     {
         public T Record { get; }
 

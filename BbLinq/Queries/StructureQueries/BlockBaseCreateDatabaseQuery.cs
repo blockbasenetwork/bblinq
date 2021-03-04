@@ -9,22 +9,11 @@ using BlockBase.BBLinq.Queries.Base;
 
 namespace BlockBase.BBLinq.Queries.StructureQueries
 {
-    public class CreateDatabaseQuery : IQuery
+    public class CreateDatabaseQuery : BlockBaseQuery, IQuery
     {
         private readonly string _databaseName;
         private Type[] _tables;
 
-        private readonly List<Type> _availableDataTypes = new List<Type>()
-        {
-            typeof(bool),
-            typeof(int),
-            typeof(decimal),
-            typeof(double),
-            typeof(TimeSpan),
-            typeof(string),
-            typeof(DateTime),
-            typeof(Guid)
-        };
 
         public CreateDatabaseQuery(string databaseName, Type[] tables)
         {
@@ -59,14 +48,6 @@ namespace BlockBase.BBLinq.Queries.StructureQueries
             return queryBuilder.ToString();
         }
 
-        protected bool IsValidColumn(PropertyInfo property)
-        {
-            var type = property.IsNullable() ? property.PropertyType.GetNullableType() : property.PropertyType;
-
-            return !property.IsVirtualOrStaticOrAbstract() &&
-                   type.IsValidDataType(_availableDataTypes) &&
-                   !property.IsNotMapped();
-        }
 
         /// <summary>
         /// Orders the table list by dependency
