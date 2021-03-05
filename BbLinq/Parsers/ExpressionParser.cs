@@ -13,6 +13,7 @@ namespace BlockBase.BBLinq.Parsers
     public class ExpressionParser
     {
         private IReadOnlyCollection<ParameterExpression> _parameters;
+        #region Parse Where
         public ExpressionNode ParseExpression(Expression expression)
         {
             if (!IsAcceptableOperation(expression))
@@ -99,7 +100,7 @@ namespace BlockBase.BBLinq.Parsers
             return null;
         }
 
-        public object GetValue(object origin, object accessor)
+        private object GetValue(object origin, object accessor)
         {
             return accessor switch
             {
@@ -270,7 +271,12 @@ namespace BlockBase.BBLinq.Parsers
             }
         }
 
-        public (ExpressionNode, bool) Reduce(ExpressionNode node, int depth = 0)
+        public ExpressionNode Reduce(ExpressionNode node)
+        {
+            return Reduce(node, 0).Item1;
+        }
+
+        private (ExpressionNode, bool) Reduce(ExpressionNode node, int depth)
         {
             switch (node)
             {
@@ -369,7 +375,114 @@ namespace BlockBase.BBLinq.Parsers
                 return (node, false);
             }
             throw new InvalidExpressionNodeException(node);
-
         }
+        #endregion
+
+        #region Parse Joins
+
+        public JoinNode[] ParseJoins(JoinNode[] currentJoins, Type newType)
+        {
+            var types = new List<Type>();
+            foreach (var currentJoin in currentJoins)
+            {
+                var left = (currentJoin.LeftNode as PropertyNode).Property.DeclaringType;
+                var right = (currentJoin.RightNode as PropertyNode).Property.DeclaringType;
+                var leftExists = false;
+                bool rightExists = left == right;
+                foreach (var type in types)
+                {
+                    if (left == type)
+                    {
+                        leftExists = true;
+                    }
+                    if (right == type)
+                    {
+                        rightExists = true;
+                    }
+                }
+
+                if (!leftExists)
+                {
+                    types.Add(left);
+                }
+                if (!rightExists)
+                {
+                    types.Add(right);
+                }
+            }
+
+            var join = CreateJoinNode(types, newType);
+            if (join == null)
+            {
+                throw new Exception();
+            }
+
+            var joins = new List<JoinNode>(currentJoins) {@join};
+            return joins.ToArray();
+        }
+
+        private JoinNode CreateJoinNode(List<Type> types, Type newType)
+        {
+            foreach (var type in types)
+            {
+                var key = type.GetForeignKey(newType);
+                if (key == null)
+                {
+                    key = newType.GetForeignKey(type);
+                }
+
+                if (key != null)
+                {
+                    return new JoinNode(newType.GetPrimaryKeyProperty(), key);
+                }
+            }
+
+            return null;
+        }
+
+        public JoinNode[] ParseJoins(Type[] tables)
+        {
+
+            var joins = new List<JoinNode>();
+            var types = new List<Type>(tables);
+
+            while (types.Count > 0)
+            {
+                var added = false;
+                var currentTable = types[0];
+                types.Remove(currentTable);
+
+                var joinNode = CreateJoinNode(types, currentTable);
+                if (joinNode != null)
+                {
+                    added = true;
+                    joins.Add(joinNode);
+                }
+
+                if (!added && !IsInJoins(joins, currentTable))
+                {
+                    throw new Exception();
+                }
+            }
+
+            return joins.ToArray();
+        }
+
+        public static bool IsInJoins(List<JoinNode> joins, Type type)
+        {
+            foreach (var join in joins)
+            {
+                var left = join.LeftNode as PropertyNode;
+                var right = join.RightNode as PropertyNode;
+                if (left.Property.DeclaringType == type || right.Property.DeclaringType == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

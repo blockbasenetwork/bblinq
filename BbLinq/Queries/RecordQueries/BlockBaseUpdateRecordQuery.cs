@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.ExtensionMethods;
@@ -33,7 +32,7 @@ namespace BlockBase.BBLinq.Queries.RecordQueries
         {
             Record = record;
             var expressionParser = new ExpressionParser();
-            Condition = expressionParser.Reduce(expressionParser.ParseExpression(condition)).Item1;
+            Condition = expressionParser.Reduce(expressionParser.ParseExpression(condition));
         }
 
         protected ComparisonNode GenerateConditionFromObject(object obj)
@@ -55,31 +54,15 @@ namespace BlockBase.BBLinq.Queries.RecordQueries
 
         private (string, object)[] GetValuesToUpdate()
         {
-            var type = typeof(T);
-
-            return null;
-        }
-
-        protected PropertyInfo[] GetFilteredProperties<T>(bool addPrimaryKey = true)
-        {
-            var properties = typeof(T).GetProperties();
-            var filteredProperties = new List<PropertyInfo>();
-            foreach (var property in properties)
+            var filteredValues = GetFilteredProperties<T>(false);
+            var values = new List<(string, object)>();
+            foreach (var value in filteredValues)
             {
-                if (!addPrimaryKey)
-                {
-                    if (property.IsPrimaryKey())
-                    {
-                        continue;
-                    }
-                }
-
-                if (IsValidColumn(property))
-                {
-                    filteredProperties.Add(property);
-                }
+                values.Add((value.Name, value.GetValue(Record)));
             }
-            return filteredProperties.ToArray();
+            return values.ToArray();
         }
+
+        
     }
 }

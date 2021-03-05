@@ -1,8 +1,13 @@
-﻿namespace BlockBase.BBLinq.Builders.Base
+﻿using System.Collections.Generic;
+using BlockBase.BBLinq.Dictionaries.Base;
+
+namespace BlockBase.BBLinq.Builders.Base
 {
-    public abstract class QueryBuilder<T> where T : QueryBuilder<T>
+    public abstract class QueryBuilder<T, TDictionary> where T : QueryBuilder<T, TDictionary> where TDictionary : IDictionary
     {
         protected string Content;
+
+        protected TDictionary Dictionary { get; set; }
 
         protected QueryBuilder()
         {

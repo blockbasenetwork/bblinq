@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using BlockBase.BBLinq.DataAnnotations;
 using BlockBase.BBLinq.Enumerables;
+using BlockBase.BBLinq.Exceptions;
 
 namespace BlockBase.BBLinq.ExtensionMethods
 {
@@ -23,6 +24,23 @@ namespace BlockBase.BBLinq.ExtensionMethods
         public static ForeignKeyAttribute[] GetForeignKeys(this PropertyInfo property)
         {
             return property.GetAttributes<ForeignKeyAttribute>();
+        }
+
+        public static PropertyInfo GetForeignKey(this Type type, Type parentType)
+        {
+            var foreignKeys = type.GetForeignKeyProperties();
+            if (foreignKeys != null)
+            {
+                foreach (var key in foreignKeys)
+                {
+                    var foreignKey = key.GetForeignKeys()[0];
+                    if (foreignKey.Parent == parentType)
+                    {
+                        return key;
+                    }
+                }
+            }
+            return null;
         }
 
 
@@ -233,6 +251,75 @@ namespace BlockBase.BBLinq.ExtensionMethods
             return type == typeof(TimeSpan) ?
                 BbSqlDataTypeEnum.Duration :
                 BbSqlDataTypeEnum.Text;
+        }
+
+        /// <summary>
+        /// Orders the table list by dependency
+        /// </summary>
+        public static Type[] OrderTablesByDependency(this Type[] tables)
+        {
+            var unsortedList = new List<Type>();
+            var sortedList = new List<Type>();
+
+            foreach (var entity in tables)
+            {
+                var foreignKeys = entity.GetForeignKeyProperties();
+                if (foreignKeys == null || foreignKeys.Length == 0)
+                {
+                    sortedList.Add(entity);
+                }
+                else
+                {
+                    unsortedList.Add(entity);
+                }
+            }
+
+            var loopLimit = unsortedList.Count + 1;
+            while (unsortedList.Count != 0)
+            {
+                var unsortedListCount = unsortedList.Count;
+                for (var unsortedCounter = 0; unsortedCounter < unsortedListCount; unsortedCounter++)
+                {
+                    var currentUnsorted = unsortedList[unsortedCounter];
+                    var foreignKeyProperties = currentUnsorted.GetForeignKeyProperties();
+                    var checkCount = 0;
+                    foreach (var foreignKeyProperty in foreignKeyProperties)
+                    {
+                        var foreignKey = foreignKeyProperty.GetForeignKeys()[0];
+                        foreach (var sortedType in sortedList)
+                        {
+                            if (foreignKey.Parent == sortedType)
+                            {
+                                checkCount++;
+                                if (checkCount == foreignKeyProperties.Length)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (checkCount == foreignKeyProperties.Length)
+                    {
+                        sortedList.Add(currentUnsorted);
+                        unsortedList.Remove(currentUnsorted);
+                        unsortedCounter--;
+                        unsortedListCount--;
+                    }
+                }
+                loopLimit--;
+                if (loopLimit != 0)
+                {
+                    continue;
+                }
+                var unsortedNames = new List<string>();
+                foreach (var unsorted in unsortedList)
+                {
+                    unsortedNames.Add(unsorted.Name);
+                }
+                throw new IncompleteModelException(unsortedNames);
+            }
+            return sortedList.ToArray();
         }
     }
 }

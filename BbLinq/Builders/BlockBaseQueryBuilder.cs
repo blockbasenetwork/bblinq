@@ -10,204 +10,207 @@ using BlockBase.BBLinq.Pocos.Nodes;
 
 namespace BlockBase.BBLinq.Builders
 {
-    public class BlockBaseQueryBuilder : QueryBuilder<BlockBaseQueryBuilder>
+    public class BlockBaseQueryBuilder : QueryBuilder<BlockBaseQueryBuilder, BbSqlDictionary>
     {
-        private readonly BbSqlDictionary _dictionary = new BbSqlDictionary();
+        public BlockBaseQueryBuilder()
+        {
+            Dictionary = new BbSqlDictionary();
+        }
 
         #region SimpleExpressions
         public BlockBaseQueryBuilder Use()
         {
-            return Append(_dictionary.Use);
+            return Append(Dictionary.Use);
         }
 
         public BlockBaseQueryBuilder Create()
         {
-            return Append(_dictionary.Create);
+            return Append(Dictionary.Create);
         }
 
         public BlockBaseQueryBuilder End()
         {
-            return Append(_dictionary.QueryEnd);
+            return Append(Dictionary.QueryEnd);
         }
 
         public BlockBaseQueryBuilder Drop()
         {
-            return Append(_dictionary.Drop);
+            return Append(Dictionary.Drop);
         }
 
         public BlockBaseQueryBuilder Database()
         {
-            return Append(_dictionary.DataBase);
+            return Append(Dictionary.DataBase);
         }
 
         public BlockBaseQueryBuilder Delete()
         {
-            return Append(_dictionary.Delete);
+            return Append(Dictionary.Delete);
         }
 
         public BlockBaseQueryBuilder From()
         {
-            return Append(_dictionary.From);
+            return Append(Dictionary.From);
         }
 
         public BlockBaseQueryBuilder WhiteSpace()
         {
-            return Append(_dictionary.WhiteSpace);
+            return Append(Dictionary.WhiteSpace);
         }
 
         public BlockBaseQueryBuilder TableColumnSeparator()
         {
-            return Append(_dictionary.TableColumnSeparator);
+            return Append(Dictionary.TableColumnSeparator);
         }
 
         public BlockBaseQueryBuilder If()
         {
-            return Append(_dictionary.If);
+            return Append(Dictionary.If);
         }
 
         public BlockBaseQueryBuilder Execute()
         {
-            return Append(_dictionary.Execute);
+            return Append(Dictionary.Execute);
         }
 
         public BlockBaseQueryBuilder QueryBatchLeftWrapper()
         {
-            return Append(_dictionary.QueryBatchWrapperLeft);
+            return Append(Dictionary.QueryBatchWrapperLeft);
         }
 
         public BlockBaseQueryBuilder QueryBatchRightWrapper()
         {
-            return Append(_dictionary.QueryBatchWrapperRight);
+            return Append(Dictionary.QueryBatchWrapperRight);
         }
 
         public BlockBaseQueryBuilder Where()
         {
-            return Append(_dictionary.Where);
+            return Append(Dictionary.Where);
         }
 
         public BlockBaseQueryBuilder EqualTo()
         {
-            return Append(_dictionary.ValueEquals);
+            return Append(Dictionary.ValueEquals);
         }
 
         public BlockBaseQueryBuilder Insert()
         {
-            return Append(_dictionary.Insert);
+            return Append(Dictionary.Insert);
         }
 
         public BlockBaseQueryBuilder Into()
         {
-            return Append(_dictionary.Into);
+            return Append(Dictionary.Into);
         }
 
         public BlockBaseQueryBuilder ListSeparator()
         {
-            return Append(_dictionary.ColumnSeparator);
+            return Append(Dictionary.ColumnSeparator);
         }
 
         public BlockBaseQueryBuilder Values()
         {
-            return Append(_dictionary.Values);
+            return Append(Dictionary.Values);
         }
 
         public BlockBaseQueryBuilder WrapListLeft()
         {
-            return Append(_dictionary.LeftListWrapper);
+            return Append(Dictionary.LeftListWrapper);
         }
 
         public BlockBaseQueryBuilder WrapListRight()
         {
-            return Append(_dictionary.RightListWrapper);
+            return Append(Dictionary.RightListWrapper);
         }
 
         public BlockBaseQueryBuilder Update()
         {
-            return Append(_dictionary.Update);
+            return Append(Dictionary.Update);
         }
 
         public BlockBaseQueryBuilder Set()
         {
-            return Append(_dictionary.Set);
+            return Append(Dictionary.Set);
         }
 
         public BlockBaseQueryBuilder NotNull()
         {
-            return Append(_dictionary.NotNull);
+            return Append(Dictionary.NotNull);
         }
 
         public BlockBaseQueryBuilder Select()
         {
-            return Append(_dictionary.Select);
+            return Append(Dictionary.Select);
         }
 
         public BlockBaseQueryBuilder Encrypted()
         {
-            return Append(_dictionary.Encrypted);
+            return Append(Dictionary.Encrypted);
         }
 
         public BlockBaseQueryBuilder Limit()
         {
-            return Append(_dictionary.Limit);
+            return Append(Dictionary.Limit);
         }
 
         public BlockBaseQueryBuilder Offset()
         {
-            return Append(_dictionary.Offset);
+            return Append(Dictionary.Offset);
         }
 
         public BlockBaseQueryBuilder Begin()
         {
-            return Append(_dictionary.Begin);
+            return Append(Dictionary.Begin);
         }
 
         public BlockBaseQueryBuilder Commit()
         {
-            return Append(_dictionary.Commit);
+            return Append(Dictionary.Commit);
         }
 
         public BlockBaseQueryBuilder Transaction()
         {
-            return Append(_dictionary.Transaction);
+            return Append(Dictionary.Transaction);
         }
 
         public BlockBaseQueryBuilder Rollback()
         {
-            return Append(_dictionary.Rollback);
+            return Append(Dictionary.Rollback);
         }
 
         public BlockBaseQueryBuilder Table()
         {
-            return Append(_dictionary.Table);
+            return Append(Dictionary.Table);
         }
 
         public BlockBaseQueryBuilder NonEncryptedColumn()
         {
-            return Append(_dictionary.NonEncryptedColumn);
+            return Append(Dictionary.NonEncryptedColumn);
         }
 
         public BlockBaseQueryBuilder Join()
         {
-            return Append(_dictionary.Join);
+            return Append(Dictionary.Join);
         }
 
         public BlockBaseQueryBuilder On()
         {
-            return Append(_dictionary.On);
+            return Append(Dictionary.On);
         }
 
         public BlockBaseQueryBuilder Range()
         {
-            return Append(_dictionary.Range);
+            return Append(Dictionary.Range);
         }
 
         public BlockBaseQueryBuilder PrimaryKey()
         {
-            return Append(_dictionary.PrimaryKey);
+            return Append(Dictionary.PrimaryKey);
         }
 
         public BlockBaseQueryBuilder References()
         {
-            return Append(_dictionary.References);
+            return Append(Dictionary.References);
         }
         #endregion
 
@@ -366,7 +369,7 @@ namespace BlockBase.BBLinq.Builders
             }
             if (condition != null)
             {
-                WhiteSpace().Where().Condition(condition);
+                WhiteSpace().Where().WhiteSpace().Condition(condition);
             }
             return End();
         }
@@ -377,12 +380,12 @@ namespace BlockBase.BBLinq.Builders
             throw new NotImplementedException();
         }
 
-        public BlockBaseQueryBuilder Select((string, string)[] columns, string originTable, (TableColumn, TableColumn)[] joins, ComparisonNode condition = null, bool isEncrypted = false, int limit = 0, int offset = 0)
+        public BlockBaseQueryBuilder Select((string, string)[] columns, string originTable, (TableColumn, TableColumn)[] joins, ExpressionNode condition = null, bool isEncrypted = false, int limit = 0, int offset = 0)
         {
             Select().WhiteSpace();
             foreach (var (table, column) in columns)
             {
-                Append(table).Append(_dictionary.TableColumnSeparator).Append(string.IsNullOrEmpty(column)? _dictionary.AllSelector : column);
+                Append(table).Append(Dictionary.TableColumnSeparator).Append(string.IsNullOrEmpty(column)? Dictionary.AllSelector : column);
                 if ((table, column) != columns[^1])
                 {
                     ListSeparator().WhiteSpace();
@@ -452,7 +455,7 @@ namespace BlockBase.BBLinq.Builders
             {
                 value = dtValue.ToString(CultureInfo.InvariantCulture);
             }
-            return Append(value.IsNumber() ? value.ToString() : $"{_dictionary.LeftTextWrapper}{value}{_dictionary.RightTextWrapper}");
+            return Append(value.IsNumber() ? value.ToString() : $"{Dictionary.LeftTextWrapper}{value}{Dictionary.RightTextWrapper}");
         }
 
 
@@ -506,21 +509,21 @@ namespace BlockBase.BBLinq.Builders
             switch (@operator)
             {
                 case BlockBaseOperator.And:
-                    return Append(_dictionary.And);
+                    return Append(Dictionary.And);
                 case BlockBaseOperator.Or:
-                    return Append(_dictionary.Or);
+                    return Append(Dictionary.Or);
                 case BlockBaseOperator.GreaterOrEqualTo:
-                    return Append(_dictionary.EqualOrGreaterThan);
+                    return Append(Dictionary.EqualOrGreaterThan);
                 case BlockBaseOperator.GreaterThan:
-                    return Append(_dictionary.GreaterThan);
+                    return Append(Dictionary.GreaterThan);
                 case BlockBaseOperator.LessThan:
-                    return Append(_dictionary.LessThan);
+                    return Append(Dictionary.LessThan);
                 case BlockBaseOperator.LessOrEqualTo:
-                    return Append(_dictionary.EqualOrLessThan);
+                    return Append(Dictionary.EqualOrLessThan);
                 case BlockBaseOperator.DifferentFrom:
-                    return Append(_dictionary.DifferentFrom);
+                    return Append(Dictionary.DifferentFrom);
                 case BlockBaseOperator.EqualTo:
-                    return Append(_dictionary.ValueEquals);
+                    return Append(Dictionary.ValueEquals);
                 default:
                     return null;
             }

@@ -34,7 +34,7 @@ namespace BlockBase.BBLinq.Queries.RecordQueries
         public BlockBaseDeleteRecordQuery(Expression<Func<T,bool>> condition)
         {
             var expressionParser = new ExpressionParser();
-            Condition = expressionParser.Reduce(expressionParser.ParseExpression(condition)).Item1;
+            Condition = expressionParser.Reduce(expressionParser.ParseExpression(condition));
         }
 
         protected ComparisonNode GenerateConditionFromObject(object obj)
