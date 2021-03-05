@@ -1053,11 +1053,6 @@ namespace BlockBase.BBLinq.Sets
     public class BlockBaseJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO> :
         BlockBaseBaseJoinSet<BlockBaseJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO>>
     {
-        public BlockBaseJoinSet(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, bool>> on)
-        {
-            Joins = GenerateJoin(on);
-        }
-
         public BlockBaseJoinSet(JoinNode[] joins)
         {
             Joins = joins;

@@ -189,7 +189,7 @@ namespace App
         {
             var set = new BlockBaseSet<Player>();
             var join = set.Join<Score>().Join<Game>().Join<A>().Join<I>().Join<B>().Join<D>().Join<E>().Join<F>().Join<G>()
-                .Join<H>().Join<C>().Join<X>().Join<Y>().Join<Z>();
+                .Join<H>().Join<C>().Join<X>().Join<Y>().Join<Z>().Take(3).Skip(8).Encrypt().Select<>();
 
             //var i = new bool[8];
             //i[3] = true;

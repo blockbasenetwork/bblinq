@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using BlockBase.BBLinq.Contexts;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.Executors;
-using BlockBase.BBLinq.Pocos;
 using BlockBase.BBLinq.Pocos.Nodes;
 using BlockBase.BBLinq.Properties;
 using BlockBase.BBLinq.Queries.Base;
@@ -29,15 +27,23 @@ namespace BlockBase.BBLinq.Sets
             queries.Add(query);
         }
 
-        public JoinNode[] GenerateJoin(Expression expression)
+        public TResult Skip(int recordsToSkip)
         {
-            return null;
+            RecordsToSkip = recordsToSkip;
+            return (TResult) this;
         }
 
-        public JoinNode[] GenerateJoins(Type[] types)
+        public TResult Take(int recordsToTake)
         {
-            return null;
+            RecordsToTake = recordsToTake;
+            return (TResult)this;
         }
 
+
+        public TResult Encrypt()
+        {
+            EncryptQuery = true;
+            return (TResult)this;
+        }
     }
 }
