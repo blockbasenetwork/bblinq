@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using BlockBase.BBLinq.Builders.Base;
 using BlockBase.BBLinq.Dictionaries;
 using BlockBase.BBLinq.Enumerables;
-using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
-using BlockBase.BBLinq.Pocos;
-using BlockBase.BBLinq.Pocos.Nodes;
+using BlockBase.BBLinq.Model.Base;
+using BlockBase.BBLinq.Model.Database;
+using BlockBase.BBLinq.Model.Nodes;
 
 namespace BlockBase.BBLinq.Builders
 {
-    public class BlockBaseQueryBuilder : QueryBuilder<BlockBaseQueryBuilder, BbSqlDictionary>
+    internal class BlockBaseQueryBuilder : QueryBuilder<BlockBaseQueryBuilder, BbSqlDictionary>
     {
         public BlockBaseQueryBuilder()
         {
@@ -18,6 +21,7 @@ namespace BlockBase.BBLinq.Builders
         }
 
         #region SimpleExpressions
+
         public BlockBaseQueryBuilder Use()
         {
             return Append(Dictionary.Use);
@@ -188,9 +192,14 @@ namespace BlockBase.BBLinq.Builders
             return Append(Dictionary.NonEncryptedColumn);
         }
 
-        public BlockBaseQueryBuilder Join()
+        public BlockBaseQueryBuilder Join(BlockBaseJoinEnum type)
         {
-            return Append(Dictionary.Join);
+            return type switch
+            {
+                BlockBaseJoinEnum.Right => Append(Dictionary.RightJoin),
+                BlockBaseJoinEnum.Left => Append(Dictionary.LeftJoin),
+                _ => Append(Dictionary.Join)
+            };
         }
 
         public BlockBaseQueryBuilder On()
@@ -212,14 +221,21 @@ namespace BlockBase.BBLinq.Builders
         {
             return Append(Dictionary.References);
         }
+
         #endregion
 
-        #region Complex Expressions
+        #region Support
+
+        #region Use Database
 
         public BlockBaseQueryBuilder UseDatabase(string databaseName)
         {
             return Use().WhiteSpace().Append(databaseName).End();
         }
+
+        #endregion
+
+        #region Transaction
 
         public BlockBaseQueryBuilder BeginTransaction()
         {
@@ -236,60 +252,234 @@ namespace BlockBase.BBLinq.Builders
             return Commit().WhiteSpace().Transaction().End();
         }
 
-        public BlockBaseQueryBuilder CreateDatabase(string databaseName)
+
+        #endregion
+
+        #endregion
+
+        #region Structure queries
+
+        #region Create Database
+
+        public BlockBaseQueryBuilder CreateDatabase(string databaseName, bool isEncrypted)
         {
-            return Create().WhiteSpace().Database().WhiteSpace().Append(databaseName).End();
+            return Create().WhiteSpace().Database().WhiteSpace().Append(databaseName).EncryptQuery(isEncrypted).End();
         }
 
-        public BlockBaseQueryBuilder CreateTable(string tableName, ColumnDefinition[] columns)
+        #endregion
+
+        #region Delete Database
+
+        public BlockBaseQueryBuilder DropDatabase(string databaseName, bool isEncrypted)
         {
-            Create().WhiteSpace().Table().WhiteSpace().Append(tableName).WhiteSpace().WrapListLeft();
-            foreach (var column in columns)
+            return Drop().WhiteSpace().Database().WhiteSpace().Append(databaseName).EncryptQuery(isEncrypted).End();
+        }
+
+        #endregion
+
+        #region Create Table
+
+        public BlockBaseQueryBuilder CreateTable(string tableName, BlockBaseColumn[] columns)
+        {
+            Create().WhiteSpace().Table().WhiteSpace().Append(tableName).WhiteSpace();
+            ListColumns(columns, true, CreateColumn);
+            return End();
+        }
+
+        #endregion
+
+        #endregion
+
+        public object TransformSpecialValue(object value, BlockBaseColumn column)
+        {
+            return value is DateTime time && column.IsComparableDate ? time.ToUnixTimestamp() : value;
+        }
+
+        #region Record queries
+
+        #region Insert
+
+        public BlockBaseQueryBuilder InsertRecord(string tableName, BlockBaseColumn[] columns, object[][] values,
+            bool isEncrypted)
+        {
+            Insert().WhiteSpace().Into().WhiteSpace().Append(tableName).WhiteSpace();
+            ListColumns(columns, true, c => Append(c.Name));
+            WhiteSpace().Values().WhiteSpace();
+            for (var rowCounter = 0; rowCounter < values.Length; rowCounter++)
             {
-                ColumnDefinition(column);
-                if (column != columns[^1])
+                WrapListLeft();
+                for (var columnCounter = 0; columnCounter < columns.Length; columnCounter++)
+                {
+                    var value = TransformSpecialValue(values[rowCounter][columnCounter], columns[columnCounter]);
+                    WrapValue(value);
+                    if (columnCounter != columns.Length - 1)
+                    {
+                        ListSeparator().WhiteSpace();
+                    }
+                }
+                WrapListRight();
+                if (rowCounter != values.Length-1)
                 {
                     ListSeparator().WhiteSpace();
                 }
             }
-            return WrapListRight().End();
+            return EncryptQuery(isEncrypted).End();
         }
 
-        public BlockBaseQueryBuilder DropTable(string tableName)
-        {
-           return Drop().WhiteSpace().Table().WhiteSpace().Append(tableName).End();
-        }
+        #endregion
 
-        public BlockBaseQueryBuilder DropDatabase(string databaseName)
-        {
-            return Drop().WhiteSpace().Database().WhiteSpace().Append(databaseName).End();
-        }
+        #region Update
 
-        public BlockBaseQueryBuilder ColumnDefinition(ColumnDefinition column)
+        public BlockBaseQueryBuilder UpdateRecord(string tableName, (BlockBaseColumn, object)[] columns,
+            ExpressionNode condition, bool isEncrypted)
         {
-            if (!column.IsColumnEncrypted)
+            var last = columns[^1].Item1.Name;
+            Update().WhiteSpace().Append(tableName).WhiteSpace().Set().WhiteSpace();
+
+            foreach (var (column, value) in columns)
             {
-                NonEncryptedColumn();
+                var val = TransformSpecialValue(value, column);
+                Append(column.Name).WhiteSpace().EqualTo().WhiteSpace().WrapValue(val);
+                if (column.Name != last)
+                {
+                    ListSeparator().WhiteSpace();
+                }
+            }
+
+            return Where(condition).EncryptQuery(isEncrypted).End();
+        }
+
+        #endregion
+
+        #region Delete
+
+        public BlockBaseQueryBuilder DeleteRecord(string tableName, ExpressionNode condition, bool isEncrypted)
+        {
+            Delete().WhiteSpace()
+                .From().WhiteSpace().Append(tableName)
+                .Where(condition)
+                .EncryptQuery(isEncrypted);
+            return End();
+        }
+
+        #endregion
+
+        #region Select
+
+        public BlockBaseQueryBuilder SelectRecord(BlockBaseColumn[] columns, JoinNode[] joins, ExpressionNode condition,
+            int? limit, int? offset, bool isEncrypted)
+        {
+            if (columns.Length == 0 && joins.Length > 0)
+            {
+                var newColumns = new List<BlockBaseColumn>();
+                foreach (var join in joins)
+                {
+
+                    if (join.Left != null && newColumns.All(x => x.Table != join.Left.Property.ReflectedType.GetTableName()))
+                        newColumns.Add(new BlockBaseColumn() { Table = join.Left.Property.ReflectedType.GetTableName() });
+                    if (join.Right != null && newColumns.All(x => x.Table != join.Right.Property.ReflectedType.GetTableName()))
+                        newColumns.Add(new BlockBaseColumn() { Table = join.Right.Property.ReflectedType.GetTableName() });
+                }
+
+                columns = newColumns.ToArray();
+            }
+            Select().WhiteSpace().ListColumns(columns, false, Column).WhiteSpace();
+            for (var joinIndex = 0; joinIndex < joins.Length; joinIndex++)
+            {
+                var join = joins[joinIndex];
+                if (joinIndex == 0)
+                {
+                    From().WhiteSpace().Table(join.Left.Property);
+                }
+                if(join.Right.Property != null)
+                {
+                    ParseJoinNode(join);
+                }
+            }
+            Where(condition);
+            Limit(limit, offset);
+			if(isEncrypted)Encrypted();
+            return End();
+        }
+
+    #endregion
+
+        #endregion
+
+        #region Auxiliary
+
+        public BlockBaseQueryBuilder Limit(int? limit, int? offset)
+        {
+            if (limit == null) return this;
+            Limit().WhiteSpace().Append(limit.ToString()).WhiteSpace();
+            if (offset != null)
+            {
+                Offset().WhiteSpace().Append(offset.ToString()).WhiteSpace();
+            }
+
+            return this;
+        }
+        public BlockBaseQueryBuilder ListColumns(BlockBaseColumn[] columns, bool wrap, Func<BlockBaseColumn, BlockBaseQueryBuilder> actionOnColumn)
+        {
+            if (wrap)
+            {
+                WrapListLeft();
+            }
+
+            for (var columnCounter = 0; columnCounter < columns.Length; columnCounter++)
+            {
+                actionOnColumn(columns[columnCounter]);
+                if (columnCounter != columns.Length-1)
+                {
+                    ListSeparator().WhiteSpace();
+                }
+            }
+            if (wrap)
+            {
+                WrapListRight();
+            }
+
+            return this;
+        }
+
+
+        public BlockBaseQueryBuilder Where(ExpressionNode condition)
+        {
+            if (condition == null) return this;
+            WhiteSpace().Where().WhiteSpace();
+            ParseNode(condition);
+            return this;
+        }
+
+        private BlockBaseQueryBuilder CreateColumn(BlockBaseColumn column)
+        {
+            if (column.IsColumnDecrypted)
+            {
+                Append(Dictionary.NonEncryptedColumn);
             }
             Append(column.Name).WhiteSpace();
-            if (IsEncryptedColumn(column))
+
+            if (column.IsValueEncrypted)
             {
                 Encrypted().WhiteSpace().Append(column.BucketCount.ToString());
-                if (column.IsRange)
-                {
-                    WhiteSpace().Range().WrapListLeft().Append(column.RangeMinimum.ToString())
-                        .ListSeparator().WhiteSpace().Append(column.RangeMaximum.ToString()).WrapListRight();
-                }
+            }
+            else if (column.IsRange)
+            {
+                Encrypted().WhiteSpace().Range().WrapListLeft()
+                    .Append(column.BucketCount.ToString()).ListSeparator().WhiteSpace()
+                    .Append(column.RangeMinimum.ToString()).ListSeparator().WhiteSpace()
+                    .Append(column.RangeMaximum.ToString()).WrapListRight();
             }
             else
             {
-                Append(column.Type.ToString());
+                Append(column.DataType.ToString());
             }
 
-            if (column.IsNotNull && !column.IsPrimaryKey)
+            if (column.IsRequired && !column.IsPrimaryKey)
             {
                 WhiteSpace().NotNull();
             }
+
             if (column.IsPrimaryKey)
             {
                 WhiteSpace().PrimaryKey();
@@ -298,151 +488,131 @@ namespace BlockBase.BBLinq.Builders
             if (column.IsForeignKey)
             {
                 WhiteSpace().References().WhiteSpace().Append(column.ParentTableName).WrapListLeft()
-                            .Append(column.ParentTableKeyName).WrapListRight();
+                    .Append(column.ParentTableKeyName).WrapListRight();
+            }
+
+            return this;
+        }
+
+        public BlockBaseQueryBuilder EncryptQuery(bool isEncrypted)
+        {
+            if (isEncrypted)
+            {
+                Encrypted();
+            }
+
+            return this;
+        }
+
+        #region Node parsing
+
+        private BlockBaseQueryBuilder ParseNode(ExpressionNode node)
+        {
+            return node switch
+            {
+                LogicNode logicNode => ParseLogicNode(logicNode),
+                ComparisonNode comparisonNode => ParseComparisonNode(comparisonNode),
+                JoinNode joinNode => ParseJoinNode(joinNode),
+                PropertyNode propertyNode => ParsePropertyNode(propertyNode),
+                ValueNode valueNode => ParseValueNode(valueNode),
+                _ => this
+            };
+        }
+
+        private BlockBaseQueryBuilder ParseLogicNode(LogicNode node)
+        {
+            ParseNode(node.Left).WhiteSpace()
+                .ParseOperator(node.Operator).WhiteSpace()
+                .ParseNode(node.Right);
+            return this;
+        }
+
+        private BlockBaseQueryBuilder ParseComparisonNode(ComparisonNode node)
+        {
+            if (node.Left is PropertyNode propertyNode && node.Right is ValueNode valueNode)
+            {
+                node.Right = ConvertValueNodeToMatchDatabaseType(propertyNode, valueNode);
+            }
+            ParseNode(node.Left).WhiteSpace()
+                .ParseOperator(node.Operator)
+                .ParseNode(node.Right);
+            return this;
+        }
+
+        private ValueNode ConvertValueNodeToMatchDatabaseType(PropertyNode propertyNode, ValueNode valueNode)
+        {
+            if (propertyNode.Property.IsComparableDate() && valueNode.Value is DateTime date)
+            {
+                valueNode.Value = date.ToUnixTimestamp();
+            }
+
+            return valueNode;
+        }
+
+        private BlockBaseQueryBuilder ParseJoinNode(JoinNode node)
+        {
+            var rightTable = node.Right.Property.ReflectedType.GetTableName();
+                WhiteSpace().Join(node.Type).WhiteSpace().Append(rightTable)
+                .WhiteSpace().On().WhiteSpace()
+                .ParsePropertyNode(node.Left).WhiteSpace()
+                .EqualTo().WhiteSpace()
+                .ParsePropertyNode(node.Right);
+            return this;
+        }
+
+        private BlockBaseQueryBuilder ParsePropertyNode(PropertyNode node)
+        {
+            var table = node.Property.ReflectedType.GetTableName();
+            var column = node.Property.GetColumnName();
+            Append(table).TableColumnSeparator().Append(column);
+            return this;
+        }
+
+        private BlockBaseQueryBuilder ParseValueNode(ValueNode node)
+        {
+            WrapValue(node.Value);
+            return this;
+        }
+
+        private BlockBaseQueryBuilder ParseOperator(BlockBaseComparisonOperator @operator)
+        {
+            switch (@operator)
+            {
+                case BlockBaseComparisonOperator.EqualTo:
+                    Append(Dictionary.ValueEquals);
+                    break;
+                case BlockBaseComparisonOperator.DifferentFrom:
+                    Append(Dictionary.DifferentFrom);
+                    break;
+                case BlockBaseComparisonOperator.GreaterOrEqualTo:
+                    Append(Dictionary.EqualOrGreaterThan);
+                    break;
+                case BlockBaseComparisonOperator.GreaterThan:
+                    Append(Dictionary.GreaterThan);
+                    break;
+                case BlockBaseComparisonOperator.LessOrEqualTo:
+                    Append(Dictionary.EqualOrLessThan);
+                    break;
+                case BlockBaseComparisonOperator.LessThan:
+                    Append(Dictionary.LessThan);
+                    break;
             }
             return this;
         }
 
-        public BlockBaseQueryBuilder IfStatement(string condition, string[] statements)
+        private BlockBaseQueryBuilder ParseOperator(BlockBaseLogicOperator @operator)
         {
-            If().WhiteSpace().Append(condition).WhiteSpace().Execute().WhiteSpace().QueryBatchLeftWrapper();
-            foreach (var statement in statements)
+            switch (@operator)
             {
-                Append(statement).WhiteSpace();
+                case BlockBaseLogicOperator.And:
+                    Append(Dictionary.And);
+                    break;
+                case BlockBaseLogicOperator.Or:
+                    Append(Dictionary.Or);
+                    break;
             }
-            return QueryBatchRightWrapper().End();
+            return this;
         }
-
-        public BlockBaseQueryBuilder Insert(string tableName, string[] columns, object[][] values)
-        {
-            Insert().WhiteSpace().Into().WhiteSpace().Append(tableName).WhiteSpace().WrapListLeft();
-            foreach (var column in columns)
-            {
-                Append(column);
-                if (column != columns[^1])
-                {
-                    ListSeparator().WhiteSpace();
-                }
-            }
-            WrapListRight().WhiteSpace().Values().WhiteSpace();
-            foreach (var record in values)
-            {
-                WrapListLeft();
-                foreach (var column in record)
-                {
-                    WrapValue(column);
-                    if (column != record[^1])
-                    {
-                        ListSeparator().WhiteSpace();
-                    }
-                }
-                WrapListRight();
-                if (record != values[^1])
-                {
-                    ListSeparator().WhiteSpace();
-                }
-            }
-            return End();
-        }
-
-        public BlockBaseQueryBuilder Delete(string tableName, ExpressionNode condition = null)
-        {
-            Delete().WhiteSpace().From().WhiteSpace().Append(tableName);
-            if (condition != null)
-            {
-                WhiteSpace().Where().WhiteSpace().Condition(condition);
-            }
-
-            return End();
-        }
-
-        public BlockBaseQueryBuilder Update(string tableName, (string, object)[] values, ExpressionNode condition = null)
-        {
-            Update().WhiteSpace().Append(tableName).WhiteSpace().Set().WhiteSpace();
-            foreach (var (column, value) in values)
-            {
-                Append(column).WhiteSpace().EqualTo().WhiteSpace().WrapValue(value);
-                if ((column, value) != values[^1])
-                {
-                    ListSeparator().WhiteSpace();
-                }
-            }
-            if (condition != null)
-            {
-                WhiteSpace().Where().WhiteSpace().Condition(condition);
-            }
-            return End();
-        }
-
-        public BlockBaseQueryBuilder UpdateCase()
-        {
-            //TODO : Implement case when scenario;
-            throw new NotImplementedException();
-        }
-
-        public BlockBaseQueryBuilder Select((string, string)[] columns, string originTable, (TableColumn, TableColumn)[] joins, ExpressionNode condition = null, bool isEncrypted = false, int limit = 0, int offset = 0)
-        {
-            Select().WhiteSpace();
-            foreach (var (table, column) in columns)
-            {
-                Append(table).Append(Dictionary.TableColumnSeparator).Append(string.IsNullOrEmpty(column)? Dictionary.AllSelector : column);
-                if ((table, column) != columns[^1])
-                {
-                    ListSeparator().WhiteSpace();
-                }
-            }
-            WhiteSpace().From().WhiteSpace().Append(originTable).WhiteSpace();
-            if (joins != null)
-            {
-                var last = joins[^1];
-                foreach (var join in joins)
-                {
-                    Join().WhiteSpace().Append(join.Item1.Table).WhiteSpace().On()
-                        .WhiteSpace().Append(join.Item1.Table).TableColumnSeparator().Append(join.Item1.Column)
-                        .WhiteSpace().EqualTo().WhiteSpace().Append(join.Item2.Table).TableColumnSeparator()
-                        .Append(join.Item2.Column);
-                    if (!(join == last))
-                    {
-                        ListSeparator().WhiteSpace();
-                    }
-                }
-                
-            }
-
-            if (condition != null)
-            {
-                Where().Condition(condition);
-            }
-
-            if (isEncrypted)
-            {
-                WhiteSpace().Encrypted();
-            }
-
-            if (limit > 0)
-            {
-                WhiteSpace().Limit().WhiteSpace().WrapValue(limit);
-            }
-            if (offset > 0)
-            {
-                WhiteSpace().Offset().WhiteSpace().WrapValue(offset);
-            }
-            return End();
-        }
-
-        #endregion
-
-
-        #region Validation
-
-        private static bool IsEncryptedColumn(ColumnDefinition column)
-        {
-            return column.IsValueEncrypted || column.IsRange;
-        }
-
-        #endregion
-
-        #region Operations
 
         public BlockBaseQueryBuilder WrapValue(object value)
         {
@@ -450,85 +620,52 @@ namespace BlockBase.BBLinq.Builders
             {
                 value = Convert.ChangeType(enumValue, enumValue.GetTypeCode());
             }
-
-            if (value is DateTime dtValue)
+            switch (value)
             {
-                value = dtValue.ToString(CultureInfo.InvariantCulture);
+                case null:
+                    return Append(Dictionary.NullValue);
+                case Guid guid when guid == Guid.Empty:
+                    return Append(Dictionary.NullValue);
+                case DateTime dtValue:
+                    value = dtValue.ToString(CultureInfo.InvariantCulture);
+                    break;
+				case float fValue:
+                    return Append(fValue.ToString(CultureInfo.InvariantCulture));
+                case decimal dValue:
+                    return Append(dValue.ToString(CultureInfo.InvariantCulture));
+                case double doValue:
+                    return Append(doValue.ToString(CultureInfo.InvariantCulture));
             }
+
             return Append(value.IsNumber() ? value.ToString() : $"{Dictionary.LeftTextWrapper}{value}{Dictionary.RightTextWrapper}");
         }
 
-
-        #endregion
-
-        #region Condition
-
-        public BlockBaseQueryBuilder Condition(ExpressionNode node)
+        public BlockBaseQueryBuilder Table(BlockBaseColumn column)
         {
-            return ParseNode(node);
-        }
-
-        private BlockBaseQueryBuilder ParseNode(ExpressionNode node)
-        {
-            switch (node)
-            {
-                case BinaryNode binaryNode:
-                    var leftParse = ParseNode(binaryNode.LeftNode);
-                    if (leftParse == null)
-                    {
-                        throw new InvalidExpressionNodeException(binaryNode);
-                    }
-                    WhiteSpace();
-                    var @operator = ParseOperation(binaryNode.Operator);
-                    if (@operator == null)
-                    {
-                        throw new InvalidExpressionNodeException(binaryNode);
-                    }
-                    WhiteSpace();
-                    var rightParse = ParseNode(binaryNode.RightNode);
-                    if (rightParse == null)
-                    {
-                        throw new InvalidExpressionNodeException(binaryNode);
-                    }
-                    break;
-                case ValueNode valueNode:
-                    WrapValue(valueNode.Value);
-                    break;
-                case PropertyNode propertyNode:
-                    var table = propertyNode.Property.DeclaringType.GetTableName();
-                    var column = propertyNode.Property.GetColumnName();
-                    Append(table).TableColumnSeparator().Append(column);
-                    break;
-            }
-
+            Append(column.Table);
             return this;
         }
 
-        private BlockBaseQueryBuilder ParseOperation(BlockBaseOperator @operator)
+        public BlockBaseQueryBuilder Table(PropertyInfo column)
         {
-            switch (@operator)
-            {
-                case BlockBaseOperator.And:
-                    return Append(Dictionary.And);
-                case BlockBaseOperator.Or:
-                    return Append(Dictionary.Or);
-                case BlockBaseOperator.GreaterOrEqualTo:
-                    return Append(Dictionary.EqualOrGreaterThan);
-                case BlockBaseOperator.GreaterThan:
-                    return Append(Dictionary.GreaterThan);
-                case BlockBaseOperator.LessThan:
-                    return Append(Dictionary.LessThan);
-                case BlockBaseOperator.LessOrEqualTo:
-                    return Append(Dictionary.EqualOrLessThan);
-                case BlockBaseOperator.DifferentFrom:
-                    return Append(Dictionary.DifferentFrom);
-                case BlockBaseOperator.EqualTo:
-                    return Append(Dictionary.ValueEquals);
-                default:
-                    return null;
-            }
+            Append(column.ReflectedType.GetTableName());
+            return this;
         }
 
+        public BlockBaseQueryBuilder Column(BlockBaseColumn column)
+        {
+            Append(column.Table).TableColumnSeparator();
+            Append(column.Name ?? Dictionary.AllSelector);
+            return this;
+        }
+
+        public BlockBaseQueryBuilder Column(PropertyInfo column)
+        {
+            Append(column.ReflectedType.GetTableName()).TableColumnSeparator();
+            Append(column.GetColumnName() ?? Dictionary.AllSelector);
+            return this;
+        }
+        #endregion
 
         #endregion
     }

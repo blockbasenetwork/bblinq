@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
@@ -6,16 +8,9 @@ namespace BlockBase.BBLinq.DataAnnotations
     /// The Column attribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ColumnAttribute : BlockBaseDataAnnotationAttribute
+    public class ColumnAttribute : BbLinqAttribute
     {
-        public ColumnAttribute(string name)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// The Column's name
-        /// </summary>
-        public string Name { get;}
+        [RegularExpression("[A-z]")]
+        public string Name { get; set; }
     }
 }

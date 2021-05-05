@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlockBase.BBLinq.ExtensionMethods
 {
-    public static class ObjectExtensionMethods
+    internal static class ObjectExtensionMethods
     {
-        /// <summary>
-        /// Checks if the object is a numeric value
-        /// </summary>
-        /// <param name="value">the value to check</param>
-        /// <returns>true if the object is a number. False otherwise</returns>
         public static bool IsNumber(this object value)
         {
             return value is sbyte
@@ -25,5 +18,18 @@ namespace BlockBase.BBLinq.ExtensionMethods
                    || value is double
                    || value is decimal;
         }
+
+        public static int ToUnixTimestamp(this DateTime date)
+        {
+            return (int) (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
+
+        public static void FromUnixTimestamp(this ref DateTime date, int timestamp)
+        {
+            date = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
+            date=date.AddSeconds(timestamp);
+        }
+
     }
+
 }

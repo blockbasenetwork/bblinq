@@ -1,207 +1,279 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BlockBase.BBLinq.Builders;
+using BlockBase.BBLinq.Enumerables;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Model.Database;
+using BlockBase.BBLinq.Model.Nodes;
 using BlockBase.BBLinq.Parsers;
-using BlockBase.BBLinq.Queries.RecordQueries;
+using BlockBase.BBLinq.Queries.BlockBaseQueries;
+using BlockBase.BBLinq.Queries.Interfaces;
+using BlockBase.BBLinq.QueryExecutors;
+using BlockBase.BBLinq.Sets.Base;
+using BlockBase.BBLinq.Sets.Interfaces;
+using BlockBase.BBLinq.Settings;
 
 namespace BlockBase.BBLinq.Sets
 {
-    public class BlockBaseSet<T> : BlockBaseBaseSet<BlockBaseSet<T>>
+    public class BlockBaseSet<T> : BlockBaseBaseSet<BlockBaseSet<T>>, IBlockBaseSet<T>
     {
-        public Expression<Func<T, bool>> Predicate { get; private set; }
+        private Expression<Func<T, bool>> _predicate;
+        private int? _recordsToSkip;
+        private int? _recordsToTake;
+        private bool _encryptQuery;
+        private List<IQuery> _batchQueries;
+        #region Insert
 
-        public int RecordsToSkip { get; private set; }
-        public int RecordsToTake { get; private set; }
-        public bool EncryptQuery { get; private set; }
-
-        public BlockBaseSet<T> Where(Expression<Func<T, bool>> predicate)
+        public IQuery GetInsertQuery(T record)
         {
-            Predicate = predicate;
-            return this;
-        }
-
-        public BlockBaseSet<T> Skip(int skipNumber)
-        {
-            RecordsToSkip = skipNumber;
-            return this;
-        }
-
-        public BlockBaseSet<T> Take(int takeNumber)
-        {
-            RecordsToTake = takeNumber;
-            return this;
-        }
-
-        public BlockBaseSet<T> Encrypt()
-        {
-            EncryptQuery = true;
-            return this;
-        }
-
-        #region INSERT
-
-        #region Insert Single
-
-        public BlockBaseInsertRecordQuery<T> Insert(T record)
-        {
-            return new BlockBaseInsertRecordQuery<T>(record);
+            return new BlockBaseRecordInsertQuery(typeof(T), record, _encryptQuery);
         }
 
         public void BatchInsert(T record)
         {
-            var query = Insert(record);
-            StoreQueryInBatch(query);
+            var query = GetInsertQuery(record);
+            _batchQueries.Add(query);
         }
 
-        public async Task InsertAsync<TResult>(T record)
+        public async Task InsertAsync(T record)
         {
-            var query = Insert(record);
-            await Executor.ExecuteQueryAsync(query.GenerateQueryString());
+            var query = GetInsertQuery(record);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
         }
 
+        public IQuery GetInsertQuery(IEnumerable<T> records)
+        {
+            return new BlockBaseRecordInsertQuery(typeof(T), records, _encryptQuery);
+        }
+
+        public void BatchInsert(IEnumerable<T> records)
+        {
+            var query = GetInsertQuery(records);
+            _batchQueries.Add(query);
+        }
+
+        public async Task InsertAsync(IEnumerable<T> records)
+        {
+            var query = GetInsertQuery(records);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
+        }
         #endregion
 
-        #region Insert Range
-
-        public BlockBaseInsertRecordQuery<T> Insert(List<T> records)
+        #region Addons
+        public IQueryableSet<T> Where(Expression<Func<T, bool>> predicate)
         {
-            return new BlockBaseInsertRecordQuery<T>(records);
+            _predicate = predicate;
+            return this;
         }
 
-        public void BatchInsert(List<T> records)
+        public IQueryableSet<T> Skip(int skipNumber)
         {
-            var query = Insert(records);
-            StoreQueryInBatch(query);
+            _recordsToSkip = skipNumber;
+            return this;
         }
 
-        public async Task InsertAsync<TResult>(List<T> records)
+        public IQueryableSet<T> Take(int takeNumber)
         {
-            var query = Insert(records);
-            await Executor.ExecuteQueryAsync(query.GenerateQueryString());
+            _recordsToTake = takeNumber;
+            return this;
         }
 
-        #endregion
 
-        #endregion
-
-        #region Update
-        public BlockBaseUpdateRecordQuery<T> Update(T record)
-        {
-            return new BlockBaseUpdateRecordQuery<T>(record, Predicate);
-        }
-
-        public void BatchUpdate<TResult>(T record)
-        {
-            var query = Update(record);
-            StoreQueryInBatch(query);
-        }
-
-        public async Task UpdateAsync<TResult>(T record)
-        {
-            var query = Update(record);
-            await Executor.ExecuteQueryAsync(query.GenerateQueryString());
-        }
         #endregion
 
         #region Delete
-
-        #region DELETE ALL
-        public BlockBaseDeleteRecordQuery<T> Delete()
+        public IQuery GetDeleteQuery()
         {
-            return new BlockBaseDeleteRecordQuery<T>(Predicate);
+            var condition = (new BlockBaseExpressionParser()).Parse(_predicate);
+            return new BlockBaseRecordDeleteQuery(typeof(T).GetTableName(), condition, _encryptQuery);
         }
 
-        public void BatchDelete<TResult>()
+        public void BatchDelete()
         {
-            var query = Delete();
-            StoreQueryInBatch(query);
+            var query = GetDeleteQuery();
+            _batchQueries.Add(query);
         }
 
         public async Task DeleteAsync()
         {
-            var query = Delete();
-            await Executor.ExecuteQueryAsync(query.GenerateQueryString());
-        }
-        #endregion
-
-        #region DELETE ALL
-        public BlockBaseDeleteRecordQuery<T> Delete(T record)
-        {
-            return new BlockBaseDeleteRecordQuery<T>(record);
+            var query = GetDeleteQuery();
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
         }
 
-        public void BatchDelete<TResult>(T record)
+        public IQuery GetDeleteQuery(T record)
         {
-            var query = Delete(record);
-            StoreQueryInBatch(query);
+            return new BlockBaseRecordDeleteQuery(typeof(T).GetTableName(), NodeBuilder.GenerateComparisonNodeOnKey(record), _encryptQuery);
+        }
+
+        public void BatchDelete(T record)
+        {
+            var query = GetDeleteQuery(record);
+            _batchQueries.Add(query);
         }
 
         public async Task DeleteAsync(T record)
         {
-            var query = Delete(record);
-            await Executor.ExecuteQueryAsync(query.GenerateQueryString());
+            var query = GetDeleteQuery(record);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
         }
         #endregion
+
+        #region Update
+        public IQuery GetUpdateQuery(T record)
+        {
+            var condition = _predicate != null ?
+                (new BlockBaseExpressionParser()).Parse(_predicate) :
+                NodeBuilder.GenerateComparisonNodeOnKey(record);
+            return new BlockBaseRecordUpdateQuery(typeof(T), record, condition, _encryptQuery);
+        }
+
+        public void BatchUpdate(T record)
+        {
+            var query = GetUpdateQuery(record);
+            _batchQueries.Add(query);
+        }
+
+
+        public async Task UpdateAsync(T record)
+        {
+            var query = GetUpdateQuery(record);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
+        }
+
+        public IQuery GetUpdateQuery(object record)
+        {
+            var condition = _predicate != null ? (new BlockBaseExpressionParser()).Parse(_predicate) : NodeBuilder.GenerateComparisonNodeOnObjectKey(typeof(T), record);
+            return new BlockBaseRecordUpdateQuery(typeof(T), record, condition, _encryptQuery);
+        }
+        
+
+        public async Task UpdateAsync(object record)
+        {
+            var query = GetUpdateQuery(record);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            await executor.ExecuteQueryAsync(query, Settings);
+        }
+
 
         #endregion
 
         #region Select
-
-        #region SELECT ALL
-        public BlockBaseSelectRecordQuery<T> Select()
+        public ISelectQuery GetSelectQuery()
         {
-            return new BlockBaseSelectRecordQuery<T>(typeof(T), null, null, null, Predicate, RecordsToTake, RecordsToTake,
-                EncryptQuery);
+            var selectedProperties = new[] { new BlockBaseColumn() { Table = typeof(T).GetTableName() } };
+            var condition = (new BlockBaseExpressionParser()).Parse(_predicate);
+            var joins = new[] { new JoinNode(typeof(T).GetPrimaryKey(), null, BlockBaseJoinEnum.Inner) };
+            return new BlockBaseRecordSelectQuery(typeof(T), null, selectedProperties, joins, condition, _recordsToTake, _recordsToSkip,
+                _encryptQuery);
         }
 
         public void BatchSelect()
         {
-            var query = Select();
-            StoreQueryInBatch(query);
+            var query = GetSelectQuery();
+            _batchQueries.Add(query);
         }
 
         public async Task<IEnumerable<T>> SelectAsync()
         {
-            var query = Select();
-            return await Executor.ExecuteQueryAsync<IEnumerable<T>>(query.GenerateQueryString());
+            var query = GetSelectQuery();
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            var res = await executor.ExecuteQueryAsync<T>(query, Settings);
+            return res;
         }
+
         #endregion
 
-
-        #region SELECT w/ MAPPER
-        public BlockBaseSelectRecordQuery<T> Select<TResult>(Func<T, TResult> mapper)
+        public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
         {
-            var origin = typeof(T);
-            var expressionParser = new ExpressionParser();
-            var predicate = expressionParser.Reduce(expressionParser.ParseExpression(Predicate));
-            return new BlockBaseSelectRecordQuery<T>(origin, null, null, null, Predicate, RecordsToTake, RecordsToTake,
-               EncryptQuery);
+            var condition = (new BlockBaseExpressionParser()).Parse(_predicate);
+            var joins = new[] { new JoinNode(typeof(T).GetPrimaryKey(), null, BlockBaseJoinEnum.Inner) };
+            var selectedProperties = (new BlockBaseExpressionParser()).ParseSelectionColumns(mapper);
+            var query = new BlockBaseRecordSelectQuery(typeof(TRecordResult), mapper, selectedProperties, joins,
+                condition, _recordsToTake, _recordsToSkip, _encryptQuery);
+            return query;
         }
 
-        public void BatchSelect<TResult>(Func<T, TResult> mapper)
+        public void BatchSelect<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
         {
-            var query = Select(mapper);
-            StoreQueryInBatch(query);
+            var query = GetSelectQuery(mapper);
+            _batchQueries.Add(query);
         }
 
-        public async Task<IEnumerable<TResult>> SelectAsync<TResult>(Func<T, TResult> mapper)
+        public async Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
         {
-            var query = Select(mapper);
-            return await Executor.ExecuteQueryAsync<IEnumerable<TResult>>(query.GenerateQueryString());
+            var query = GetSelectQuery(mapper);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            var res = await executor.ExecuteQueryAsync<TRecordResult>(query, Settings);
+            return res;
         }
-        #endregion
-
-        #endregion
 
         #region Join
 
-        public BlockBaseJoinSet<T, TB> Join<TB>()
+        public IJoin<T, TB> Join<TB>(BlockBaseJoinEnum type = BlockBaseJoinEnum.Inner)
         {
-            var joins = new ExpressionParser().ParseJoins(new[] {typeof(T), typeof(TB)});
-            return new BlockBaseJoinSet<T, TB>(joins);
+            return new BlockBaseJoin<T, TB>(Executor, Settings, _batchQueries, type);
         }
 
         #endregion
+
+        #region Encrypt
+        IFetchableSet<T> IBlockBaseBaseSet<IFetchableSet<T>>.Encrypt()
+        {
+            _encryptQuery = true;
+            return this;
+        }
+        IInsertableSet<T> IBlockBaseBaseSet<IInsertableSet<T>>.Encrypt()
+        {
+            _encryptQuery = true;
+            return this;
+        }
+        IQueryableSet<T> IBlockBaseBaseSet<IQueryableSet<T>>.Encrypt()
+        {
+            _encryptQuery = true;
+            return this;
+        }
+        IBlockBaseSet<T> IBlockBaseBaseSet<IBlockBaseSet<T>>.Encrypt()
+        {
+            _encryptQuery = true;
+            return this;
+        }
+        #endregion
+
+        public ISelectQuery GetGetQuery(object id)
+        {
+            var condition = NodeBuilder.GenerateComparisonNodeOnKey(typeof(T), id);
+            var selectedProperties = new[] { new BlockBaseColumn() { Table = typeof(T).GetTableName() } };
+            var joins = new[] { new JoinNode(typeof(T).GetPrimaryKey(), null, BlockBaseJoinEnum.Inner) };
+            var query = new BlockBaseRecordSelectQuery(typeof(T), null, selectedProperties, joins,
+                condition, 1, 0, _encryptQuery);
+            return query;
+        }
+
+        public void BatchGet(object id)
+        {
+            var query = GetGetQuery(id);
+            _batchQueries.Add(query);
+        }
+
+        public async Task<T> GetAsync(object id)
+        {
+            var query = GetGetQuery(id);
+            var executor = new BlockBaseQueryExecutor() { UseDatabase = true };
+            var res = (await executor.ExecuteQueryAsync<T>(query, Settings)).ToArray();
+            return res.Length == 0 ? default : res[0];
+        }
+
+        public BlockBaseSet(BlockBaseQueryExecutor executor, BlockBaseSettings settings, List<IQuery> batchQueries) : base(executor, settings)
+        {
+            _batchQueries = batchQueries;
+        }
     }
 }

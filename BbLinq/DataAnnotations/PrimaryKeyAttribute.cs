@@ -1,4 +1,5 @@
 ﻿using System;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
@@ -6,7 +7,7 @@ namespace BlockBase.BBLinq.DataAnnotations
     /// Primary key attribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class PrimaryKeyAttribute : BlockBaseDataAnnotationAttribute
+    public class PrimaryKeyAttribute : BbLinqAttribute
     {
     }
 }

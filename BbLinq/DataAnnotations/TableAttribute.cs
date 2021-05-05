@@ -1,21 +1,16 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
     /// <summary>
-    /// The table attribute
+    /// The Column attribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class TableAttribute : BlockBaseDataAnnotationAttribute
+    public class TableAttribute : BbLinqAttribute
     {
-        public TableAttribute(string name)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// The table's name
-        /// </summary>
-        public string Name { get;}
+        [RegularExpression("[A-z]")]
+        public string Name { get; set; }
     }
 }

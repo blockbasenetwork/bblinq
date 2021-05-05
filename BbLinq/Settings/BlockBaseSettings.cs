@@ -2,19 +2,11 @@
 
 namespace BlockBase.BBLinq.Settings
 {
-    /// <summary>
-    /// Settings for a BlockBase node
-    /// </summary>
-    public sealed class BlockBaseSettings : DbSettings
+    public class BlockBaseSettings : DatabaseSettings
     {
         /// <summary>
-        /// The node's user account
+        /// Defines dates as format invariant
         /// </summary>
-        public string UserAccount { get; set; }
-
-        /// <summary>
-        /// The node's private key
-        /// </summary>
-        public string PrivateKey { get; set; }
+        public bool IsDateTimeInvariant { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using BlockBase.BBLinq.DataAnnotations;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
@@ -6,7 +8,7 @@ namespace BlockBase.BBLinq.DataAnnotations
     /// Sets the field as encrypted
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class EncryptedValueAttribute : BlockBaseDataAnnotationAttribute
+    public class EncryptedValueAttribute : BbLinqAttribute
     {
         public EncryptedValueAttribute(int buckets = 0)
         {

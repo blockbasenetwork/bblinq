@@ -1,13 +1,15 @@
 ﻿using System;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
     /// <summary>
-    /// For properties that can be mapped
+    /// A property that is mapped and converted to string
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class MappedAttribute : BlockBaseDataAnnotationAttribute
+    public class MappedAttribute : BbLinqAttribute
     {
+
 
     }
 }

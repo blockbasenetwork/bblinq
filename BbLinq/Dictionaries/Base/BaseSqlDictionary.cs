@@ -1,6 +1,6 @@
 ﻿namespace BlockBase.BBLinq.Dictionaries.Base
 {
-    public abstract class BaseSqlDictionary : IDictionary
+    internal abstract class BaseSqlDictionary : IDictionary
     {
         public virtual string And => "AND";
         public virtual string Delete => "DELETE";

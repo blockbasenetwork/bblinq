@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using BlockBase.BBLinq.Dictionaries.Base;
+﻿using BlockBase.BBLinq.Dictionaries.Base;
 
 namespace BlockBase.BBLinq.Builders.Base
 {
-    public abstract class QueryBuilder<T, TDictionary> where T : QueryBuilder<T, TDictionary> where TDictionary : IDictionary
+    internal abstract class QueryBuilder<T, TDictionary> where T : QueryBuilder<T, TDictionary> where TDictionary : IDictionary
     {
         protected string Content;
 

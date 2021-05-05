@@ -1,4 +1,5 @@
 ﻿using System;
+using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
@@ -6,7 +7,7 @@ namespace BlockBase.BBLinq.DataAnnotations
     /// A Range column
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class RangeAttribute : BlockBaseDataAnnotationAttribute
+    public class RangeAttribute : BbLinqAttribute
     {
         public RangeAttribute(int minimum, int maximum, int buckets = 1)
         {

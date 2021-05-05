@@ -2,12 +2,13 @@
 
 namespace BlockBase.BBLinq.Dictionaries
 {
-    public class BbSqlDictionary : BaseSqlDictionary
+    internal class BbSqlDictionary : BaseSqlDictionary, IDictionary
     {
-        public string Begin => "BEGIN";
+        public string Begin => "BEGIN;";
         public string Transaction => "TRANSACTION";
-        public string Commit => "COMMIT";
+        public string Commit => "COMMIT;";
         public string Rollback => "ROLLBACK";
+        public string NullValue => "NULL";
         public string AllSelector => "*";
         public string DifferentFrom => "!=";
         public string QueryEnd => ";";
@@ -28,6 +29,8 @@ namespace BlockBase.BBLinq.Dictionaries
         public string NonEncryptedColumn => "!";
         public string If => "IF";
         public string Execute => "EXECUTE";
+        public string LeftJoin => "LEFT JOIN";
+        public string RightJoin => "RIGHT JOIN";
         public string QueryBatchWrapperLeft => "{";
         public string QueryBatchWrapperRight => "}";
         public string NotNull => "NOT NULL";

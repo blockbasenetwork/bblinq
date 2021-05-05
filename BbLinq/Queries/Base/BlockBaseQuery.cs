@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Queries.Interfaces;
 
 namespace BlockBase.BBLinq.Queries.Base
 {
-    public class BlockBaseQuery
+    public abstract class BlockBaseQuery : IQuery
     {
+        public bool IsEncrypted { get; }
 
         private readonly List<Type> _availableDataTypes = new List<Type>()
         {
@@ -19,18 +21,24 @@ namespace BlockBase.BBLinq.Queries.Base
             typeof(DateTime),
             typeof(Guid)
         };
+
+        protected BlockBaseQuery(bool isEncrypted)
+        {
+            IsEncrypted = isEncrypted;
+        }
+
         protected bool IsValidColumn(PropertyInfo property)
         {
             var type = property.IsNullable() ? property.PropertyType.GetNullableType() : property.PropertyType;
 
             return !property.IsVirtualOrStaticOrAbstract() &&
-                   type.IsValidDataType(_availableDataTypes) &&
+                   type.MatchesDataType(_availableDataTypes) &&
                    !property.IsNotMapped();
         }
 
-        protected PropertyInfo[] GetFilteredProperties<T>(bool addPrimaryKey = true)
+        protected PropertyInfo[] GetFilteredProperties(Type type, bool addPrimaryKey = true)
         {
-            var properties = typeof(T).GetProperties();
+            var properties = type.GetProperties();
             var filteredProperties = new List<PropertyInfo>();
             foreach (var property in properties)
             {
@@ -48,6 +56,12 @@ namespace BlockBase.BBLinq.Queries.Base
                 }
             }
             return filteredProperties.ToArray();
+        }
+
+
+        public virtual string GenerateQueryString()
+        {
+            return string.Empty;
         }
     }
 }
