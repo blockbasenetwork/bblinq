@@ -18,7 +18,7 @@ namespace BlockBase.BBLinq.QueryExecutors
         #region Callers
         public async Task ExecuteQueryAsync(IQuery query, DatabaseSettings settings)
         {
-            var queryString = BuildQueryString(query.GenerateQueryString(), settings);
+            var queryString = BuildQueryString(query.GenerateQueryString(), settings, true);
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
             var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
@@ -42,9 +42,14 @@ namespace BlockBase.BBLinq.QueryExecutors
         public async Task ExecuteBatchQueryAsync(List<IQuery> queries, DatabaseSettings settings)
         {
             var queryString = "";
-            foreach (var query in queries)
+            var useDatabase = true;
+            for (var queryIndex = 0; queryIndex < queries.Count; queryIndex++)
             {
-                queryString+=BuildQueryString(query.GenerateQueryString(), settings);
+                queryString+=BuildQueryString(queries[queryIndex].GenerateQueryString(), settings, useDatabase);
+                if (queryIndex == 0)
+                {
+                    useDatabase = false;
+                }
             }
 
             //queryString = WrapQueryInTransaction(queryString);
@@ -67,7 +72,7 @@ namespace BlockBase.BBLinq.QueryExecutors
 
         public async Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(ISelectQuery query, DatabaseSettings settings)
         {
-            var queryString = BuildQueryString(query.GenerateQueryString(), settings);
+            var queryString = BuildQueryString(query.GenerateQueryString(), settings, true);
             var requestBody = GenerateRequestBody(queryString, settings);
             var callResult = await CallRequest(settings, requestBody);
             var parsedResult = (new BlockBaseResultParser()).Parse<TResult>(callResult, query);
@@ -102,10 +107,13 @@ namespace BlockBase.BBLinq.QueryExecutors
         #endregion
 
         #region Completers
-        private string BuildQueryString(string queryString, DatabaseSettings settings)
+        private string BuildQueryString(string queryString, DatabaseSettings settings, bool useDatabase)
         {
             var queryBuilder = new BlockBaseQueryBuilder();
-            AddUseDatabase(queryBuilder, settings);
+            if (useDatabase)
+            {
+                AddUseDatabase(queryBuilder, settings);
+            }
             queryBuilder.Append(queryString);
             return queryBuilder.ToString();
         }

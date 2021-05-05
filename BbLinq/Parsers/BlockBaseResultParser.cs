@@ -221,7 +221,7 @@ namespace BlockBase.BBLinq.Parsers
         public ExecutionResult<TResult> ParseOperationExecutionResult<TResult>(string[] columns, string[][] data)
         {
             var executedIndex = Array.IndexOf(columns, "Executed");
-            var messageIndex = Array.IndexOf(columns, "Executed");
+            var messageIndex = Array.IndexOf(columns, "Message");
             if (executedIndex != -1 && messageIndex != -1)
             {
                 return new ExecutionResult<TResult>
