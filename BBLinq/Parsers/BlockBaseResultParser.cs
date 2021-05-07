@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -141,6 +142,10 @@ namespace BlockBase.BBLinq.Parsers
             var result = new List<object>();
             for (var columnIndex = 0; columnIndex < columns.Length; columnIndex++)
             {
+                if (columnIndex == 17)
+                {
+
+                }
                 var property = columns[columnIndex].Property;
                 var rawValue = data[columnIndex];
                 var value = ParseValue(property, rawValue);
@@ -261,6 +266,10 @@ namespace BlockBase.BBLinq.Parsers
 
             if (propType == typeof(DateTime) && property.IsComparableDate())
             {
+                if (value == "")
+                {
+                    return null;
+                }
                 var timestamp = int.Parse(value);
                 var date = new DateTime();
                 date.FromUnixTimestamp(timestamp);
