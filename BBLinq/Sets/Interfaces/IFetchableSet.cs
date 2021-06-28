@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using BlockBase.BBLinq.Queries.Interfaces;
+﻿using BlockBase.BBLinq.Queries.Interfaces;
+using System.Threading.Tasks;
 
 namespace BlockBase.BBLinq.Sets.Interfaces
 {

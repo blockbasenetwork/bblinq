@@ -9,6 +9,7 @@ namespace BlockBase.BBLinq.Dictionaries
         public string Commit => "COMMIT;";
         public string Rollback => "ROLLBACK";
         public string NullValue => "NULL";
+        public string Unique => "UNIQUE";
         public string AllSelector => "*";
         public string DifferentFrom => "!=";
         public string QueryEnd => ";";

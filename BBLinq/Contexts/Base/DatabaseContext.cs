@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BlockBase.BBLinq.Exceptions;
+﻿using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.Queries.Interfaces;
 using BlockBase.BBLinq.QueryExecutors.Interfaces;
 using BlockBase.BBLinq.Sets.Interfaces;
 using BlockBase.BBLinq.Settings.Base;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BlockBase.BBLinq.Contexts.Base
 {
-    public abstract class DatabaseContext<TSettings, TQueryExecutor>:IDisposable where TSettings : DatabaseSettings where TQueryExecutor:IQueryExecutor
+    public abstract class DatabaseContext<TSettings, TQueryExecutor> : IDisposable where TSettings : DatabaseSettings where TQueryExecutor : IQueryExecutor
     {
         protected TSettings Settings;
         protected TQueryExecutor QueryExecutor;

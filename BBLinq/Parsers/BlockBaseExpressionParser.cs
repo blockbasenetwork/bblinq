@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using BlockBase.BBLinq.Enumerables;
+﻿using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Base;
 using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Model.Nodes;
 using BlockBase.BBLinq.Validators;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Parsers
 {
     internal class BlockBaseExpressionParser
     {
         private int _depth;
-        private IReadOnlyCollection<ParameterExpression> _parameters;
+        private List<ParameterExpression> _parameters;
 
         #region ParseCondition
 
@@ -28,7 +28,7 @@ namespace BlockBase.BBLinq.Parsers
                 return null;
             }
             _depth = 0;
-            _parameters = expression.Parameters;
+            _parameters = expression.Parameters.ToList();
             var result = Parse(expression.Body);
             return result;
         }
@@ -48,7 +48,7 @@ namespace BlockBase.BBLinq.Parsers
 
         #region Method Call
 
-        private  ExpressionNode ParseMethodCallExpression(MethodCallExpression expression)
+        private ExpressionNode ParseMethodCallExpression(MethodCallExpression expression)
         {
             var method = expression.Method;
             var valueExpression = expression.Object;
@@ -58,9 +58,9 @@ namespace BlockBase.BBLinq.Parsers
                 value = constantValue.Value;
             }
             else if (method.Name == "Contains")
-            {
-                var valExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess || x.NodeType == ExpressionType.Constant && typeof(IEnumerable).IsAssignableFrom(x.Type));
-                var possibleValueExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess && !typeof(IEnumerable).IsAssignableFrom(x.Type));
+            { 
+                var valExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess || x.NodeType == ExpressionType.Constant && typeof(IEnumerable).IsAssignableFrom(x.Type) && x.Type != typeof(string));
+                var possibleValueExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess && (x.Type == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(x.Type)));
 
                 if (valExpression == null || possibleValueExpression == null)
                 {
@@ -77,7 +77,7 @@ namespace BlockBase.BBLinq.Parsers
 
                 if (comparisonNodes.Count == 0)
                 {
-                    throw new UnsupportedExpressionException(expression);
+                    return null;
                 }
                 if (comparisonNodes.Count == 1)
                 {
@@ -115,7 +115,7 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Unary
-        private  ExpressionNode ParseUnaryExpression(UnaryExpression expression)
+        private ExpressionNode ParseUnaryExpression(UnaryExpression expression)
         {
             if (expression.IsNot())
             {
@@ -133,7 +133,7 @@ namespace BlockBase.BBLinq.Parsers
             if (expression.NodeType == ExpressionType.Convert && expression.Type == typeof(int) &&
                 expression.Operand.Type.IsEnum && expression.Operand is MemberExpression operand)
             {
-                return ParseMemberExpression(operand );
+                return ParseMemberExpression(operand);
             }
             throw new UnsupportedExpressionException(expression);
         }
@@ -141,7 +141,7 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Sub-Unary
-        private  ExpressionNode ParseNot(UnaryExpression expression)
+        private ExpressionNode ParseNot(UnaryExpression expression)
         {
             var operandNode = Parse(expression.Operand);
             if (operandNode is PropertyNode operandProperty)
@@ -164,7 +164,7 @@ namespace BlockBase.BBLinq.Parsers
 
         #region Binary
 
-        private  ExpressionNode ParseBinaryExpression(BinaryExpression expression)
+        private ExpressionNode ParseBinaryExpression(BinaryExpression expression)
         {
             if (expression.IsAcceptedComparison())
             {
@@ -186,11 +186,11 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Sub-Binary
-        private  ExpressionNode ParseComparisonExpression(BinaryExpression expression)
+        private ExpressionNode ParseComparisonExpression(BinaryExpression expression)
         {
             if (expression.IsAcceptedComparison())
             {
-                if(expression.NodeType == ExpressionType.Convert)
+                if (expression.NodeType == ExpressionType.Convert)
                 {
 
                 }
@@ -221,7 +221,7 @@ namespace BlockBase.BBLinq.Parsers
             throw new UnsupportedExpressionException(expression);
         }
 
-        private  ExpressionNode ParseLogicExpression(BinaryExpression expression)
+        private ExpressionNode ParseLogicExpression(BinaryExpression expression)
         {
             if (expression.IsAcceptedLogic())
             {
@@ -250,7 +250,7 @@ namespace BlockBase.BBLinq.Parsers
             throw new UnsupportedExpressionException(expression);
         }
 
-        private  ExpressionNode ParseArithmeticExpression(BinaryExpression expression)
+        private ExpressionNode ParseArithmeticExpression(BinaryExpression expression)
         {
             var @operator = ParseArithmeticOperator(expression.NodeType);
             var (left, right) = ParseSides(expression);
@@ -281,7 +281,7 @@ namespace BlockBase.BBLinq.Parsers
 
         #region Sub-Binary
 
-        public  dynamic ExecuteOperatorOnNumbers(BlockBaseArithmeticOperator @operator, dynamic left, dynamic right)
+        public dynamic ExecuteOperatorOnNumbers(BlockBaseArithmeticOperator @operator, dynamic left, dynamic right)
         {
             return @operator switch
             {
@@ -294,7 +294,7 @@ namespace BlockBase.BBLinq.Parsers
             };
         }
 
-        public  (ExpressionNode, ExpressionNode) ParseSides(BinaryExpression expression)
+        public (ExpressionNode, ExpressionNode) ParseSides(BinaryExpression expression)
         {
             _depth++;
             var left = Parse(expression.Left);
@@ -306,7 +306,7 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Member Access 
-        private  ExpressionNode ParseMemberExpression(MemberExpression expression)
+        private ExpressionNode ParseMemberExpression(MemberExpression expression)
         {
             if (expression.IsPropertyAccess(_parameters))
             {
@@ -334,7 +334,7 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Constant
-        private  ExpressionNode ParseConstantExpression(ConstantExpression expression)
+        private ExpressionNode ParseConstantExpression(ConstantExpression expression)
         {
             if (_depth == 0)
             {
@@ -346,22 +346,23 @@ namespace BlockBase.BBLinq.Parsers
         #endregion
 
         #region Auxiliary
-        private  ComparisonNode GetIsNode(PropertyNode node, bool value = true)
+        private ComparisonNode GetIsNode(PropertyNode node, bool value = true)
         {
             return node.Property.PropertyType != typeof(bool) ? null :
                 new ComparisonNode(BlockBaseComparisonOperator.EqualTo, node, new ValueNode(value));
         }
 
-        private  ComparisonNode GetIsNotNode(PropertyNode node)
+        private LogicNode GetIsNotNode(PropertyNode node)
         {
-            return GetIsNode(node, false);
+            return node.Property.PropertyType != typeof(bool) ? null :
+                new LogicNode(BlockBaseLogicOperator.Or, new ComparisonNode(BlockBaseComparisonOperator.DifferentFrom, node, new ValueNode(true)),
+            new ComparisonNode(BlockBaseComparisonOperator.DifferentFrom, node, new ValueNode(null)), true);
         }
-
 
         #endregion
 
         #region Operators
-        private  BlockBaseComparisonOperator ParseComparisonOperator(ExpressionType expressionOperator)
+        private BlockBaseComparisonOperator ParseComparisonOperator(ExpressionType expressionOperator)
         {
             return expressionOperator switch
             {
@@ -375,7 +376,7 @@ namespace BlockBase.BBLinq.Parsers
             };
         }
 
-        private  BlockBaseArithmeticOperator ParseArithmeticOperator(ExpressionType expressionOperator)
+        private BlockBaseArithmeticOperator ParseArithmeticOperator(ExpressionType expressionOperator)
         {
             return expressionOperator switch
             {
@@ -388,7 +389,7 @@ namespace BlockBase.BBLinq.Parsers
             };
         }
 
-        private  BlockBaseLogicOperator ParseLogicOperator(ExpressionType expressionOperator)
+        private BlockBaseLogicOperator ParseLogicOperator(ExpressionType expressionOperator)
         {
             switch (expressionOperator)
             {
@@ -408,9 +409,9 @@ namespace BlockBase.BBLinq.Parsers
 
         #region Parse Selection
 
-        public  BlockBaseColumn[] ParseSelectionColumns(LambdaExpression expression)
+        public BlockBaseColumn[] ParseSelectionColumns(LambdaExpression expression)
         {
-            _parameters = expression.Parameters;
+            _parameters = expression.Parameters.ToList();
             BlockBaseColumn[] result = expression.Body switch
             {
                 MemberExpression memberExpression => ParseMemberSelection(memberExpression),
@@ -445,12 +446,12 @@ namespace BlockBase.BBLinq.Parsers
             return null;
         }
 
-        public  BlockBaseColumn[] ParseMemberSelection(MemberExpression memberExpression)
+        public BlockBaseColumn[] ParseMemberSelection(MemberExpression memberExpression)
         {
-            return new []{BlockBaseColumn.From(memberExpression.GetProperty())};
+            return new[] { BlockBaseColumn.From(memberExpression.GetProperty()) };
         }
 
-        public  BlockBaseColumn[] ParseMemberInitSelection(MemberInitExpression memberInitExpression)
+        public BlockBaseColumn[] ParseMemberInitSelection(MemberInitExpression memberInitExpression)
         {
             var columns = new List<BlockBaseColumn>();
             var bindings = memberInitExpression.Bindings;
@@ -461,6 +462,18 @@ namespace BlockBase.BBLinq.Parsers
                     if (assignment.Expression is MemberExpression memberExpression)
                     {
                         columns.Add(BlockBaseColumn.From(memberExpression.GetProperty()));
+                    }
+                    else if (assignment.Expression is ParameterExpression parameterExpression &&
+                             _parameters.Select(x => x.Name).Contains(parameterExpression.Name))
+                    {
+                        var parameter = _parameters.FirstOrDefault(x => x.Name == parameterExpression.Name);
+                        if (parameter != null)
+                        {
+                            var properties = parameter.Type.GetProperties()
+                                .Where(x => !x.IsVirtualOrStaticOrAbstract());
+                            
+                            columns.AddRange( properties.Select(BlockBaseColumn.From));
+                        }
                     }
                     else
                     {
@@ -479,7 +492,7 @@ namespace BlockBase.BBLinq.Parsers
             return columns.ToArray();
         }
 
-        public  BlockBaseColumn[] ParseNewSelection(NewExpression newExpression)
+        public BlockBaseColumn[] ParseNewSelection(NewExpression newExpression)
         {
             var columns = new List<BlockBaseColumn>();
             var arguments = newExpression.Arguments;
@@ -501,7 +514,7 @@ namespace BlockBase.BBLinq.Parsers
             return columns.ToArray();
         }
 
-        private  PropertyInfo[] RetrievePropertyFromExpression(Expression expression)
+        private PropertyInfo[] RetrievePropertyFromExpression(Expression expression)
         {
             var properties = new List<PropertyInfo>();
             switch (expression)
@@ -510,7 +523,7 @@ namespace BlockBase.BBLinq.Parsers
                     var member = memberExpression.Member;
                     if (member is PropertyInfo)
                     {
-                        return new[] { memberExpression.GetProperty()};
+                        return new[] { memberExpression.GetProperty() };
                     }
                     return null;
                 case BinaryExpression binaryExpression:

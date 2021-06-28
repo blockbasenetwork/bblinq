@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BlockBase.BBLinq.Builders;
@@ -108,6 +109,25 @@ namespace BlockBase.BBLinq.Sets
             BatchQueries.Add(query);
         }
 
+        public async Task<dynamic> FirstOrDefault()
+        {
+            var result = await SelectAsync();
+            return result.FirstOrDefault();
+        }
+
+        public async Task<dynamic> SingleOrDefault()
+        {
+            var result = await SelectAsync();
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count()
+        {
+            var result = await SelectAsync();
+            return result.Count();
+        }
+
+
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper)
         {
             return base.GetSelectQuery<TRecordResult>(mapper);
@@ -124,6 +144,24 @@ namespace BlockBase.BBLinq.Sets
         {
             return await base.SelectAsync<TRecordResult>(mapper);
         }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
     }
 
     public class BlockBaseJoin<TA, TB, TC> : BlockBaseJoin<BlockBaseJoin<TA, TB, TC>>, IJoin<TA, TB, TC>
@@ -133,6 +171,24 @@ namespace BlockBase.BBLinq.Sets
             Joins = joins;
         }
 
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC,  TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
         public BlockBaseJoin(BlockBaseQueryExecutor executor, BlockBaseSettings settings, List<IQuery> queries, BlockBaseJoinEnum type = BlockBaseJoinEnum.Inner) : base(executor, settings, queries)
         {
             Joins = new[] {JoinBuilder.BuildJoin(typeof(TA), typeof(TB), type)};
@@ -203,6 +259,24 @@ namespace BlockBase.BBLinq.Sets
             Joins = joins;
         }
 
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD,TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD,TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
         public BlockBaseJoin(BlockBaseQueryExecutor executor, BlockBaseSettings settings, List<IQuery> queries, BlockBaseJoinEnum type = BlockBaseJoinEnum.Inner) : base(executor, settings, queries)
         {
             Joins = new[] {JoinBuilder.BuildJoin(typeof(TA), typeof(TB), type)};
@@ -327,6 +401,25 @@ namespace BlockBase.BBLinq.Sets
             Predicate = predicate;
             return this;
         }
+
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE,TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
     }
 
     public class BlockBaseJoin<TA, TB, TC, TD, TE, TF> : BlockBaseJoin<BlockBaseJoin<TA, TB, TC, TD, TE, TF>>, IJoin<TA, TB, TC, TD, TE, TF>
@@ -390,6 +483,23 @@ namespace BlockBase.BBLinq.Sets
         {
             Predicate = predicate;
             return this;
+        }
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
         }
     }
 
@@ -455,6 +565,23 @@ namespace BlockBase.BBLinq.Sets
             Predicate = predicate;
             return this;
         }
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG,  TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
     }
 
     public class BlockBaseJoin<TA, TB, TC, TD, TE, TF, TG, TH> : BlockBaseJoin<BlockBaseJoin<TA, TB, TC, TD, TE, TF, TG, TH>>, IJoin<TA, TB, TC, TD, TE, TF, TG, TH>
@@ -519,6 +646,23 @@ namespace BlockBase.BBLinq.Sets
             Predicate = predicate;
             return this;
         }
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH,  TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH,  TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH,  TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
     }
     public class BlockBaseJoin<TA, TB, TC, TD, TE, TF, TG, TH, TI> : BlockBaseJoin<BlockBaseJoin<TA, TB, TC, TD, TE, TF, TG, TH, TI>>, IJoin<TA, TB, TC, TD, TE, TF, TG, TH, TI>
     {
@@ -582,6 +726,25 @@ namespace BlockBase.BBLinq.Sets
             Predicate = predicate;
             return this;
         }
+
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI,TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
     }
 
 
@@ -623,6 +786,24 @@ namespace BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper)
         {
             return await base.SelectAsync<TRecordResult>(mapper);
+        }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
         }
 
 
@@ -691,6 +872,25 @@ namespace BlockBase.BBLinq.Sets
         {
             return await base.SelectAsync<TRecordResult>(mapper);
         }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
+
         public IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK> Encrypt()
         {
             EncryptQuery = true;
@@ -754,6 +954,25 @@ namespace BlockBase.BBLinq.Sets
         {
             return await base.SelectAsync<TRecordResult>(mapper);
         }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
+
         public IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL> Encrypt()
         {
             EncryptQuery = true;
@@ -817,6 +1036,24 @@ namespace BlockBase.BBLinq.Sets
         public async Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper)
         {
             return await base.SelectAsync<TRecordResult>(mapper);
+        }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
         }
 
         public IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM> Encrypt()
@@ -883,6 +1120,25 @@ namespace BlockBase.BBLinq.Sets
         {
             return await base.SelectAsync<TRecordResult>(mapper);
         }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
+
         public IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN> Where(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, bool>> predicate)
         {
             Predicate = predicate;
@@ -942,6 +1198,25 @@ namespace BlockBase.BBLinq.Sets
         {
             return await base.SelectAsync<TRecordResult>(mapper);
         }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper)
+        {
+            var result = await SelectAsync(mapper);
+            return result.Count();
+        }
+
         public IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO> Where(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, bool>> predicate)
         {
             Predicate = predicate;

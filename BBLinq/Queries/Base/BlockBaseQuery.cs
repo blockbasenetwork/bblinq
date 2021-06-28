@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Queries.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BlockBase.BBLinq.ExtensionMethods;
-using BlockBase.BBLinq.Queries.Interfaces;
 
 namespace BlockBase.BBLinq.Queries.Base
 {

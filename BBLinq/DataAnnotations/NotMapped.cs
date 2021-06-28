@@ -1,5 +1,5 @@
-﻿using System;
-using BlockBase.BBLinq.DataAnnotations.Base;
+﻿using BlockBase.BBLinq.DataAnnotations.Base;
+using System;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {

@@ -1,6 +1,4 @@
-﻿using BlockBase.BBLinq.Model.Base;
-
-namespace BlockBase.BBLinq.Queries.Base
+﻿namespace BlockBase.BBLinq.Queries.Base
 {
     public interface IDeleteDatabaseQuery
     {

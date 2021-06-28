@@ -1,7 +1,7 @@
-﻿using System;
-using System.Reflection;
-using BlockBase.BBLinq.DataAnnotations.Base;
+﻿using BlockBase.BBLinq.DataAnnotations.Base;
 using BlockBase.BBLinq.ExtensionMethods;
+using System;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {
@@ -18,7 +18,7 @@ namespace BlockBase.BBLinq.DataAnnotations
         /// </summary>
         public Type Parent
         {
-            get=>_parent;
+            get => _parent;
             set
             {
                 _parent = value;

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BlockBase.BBLinq.DataAnnotations.Base;
+using System;
 using System.ComponentModel.DataAnnotations;
-using BlockBase.BBLinq.DataAnnotations.Base;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {

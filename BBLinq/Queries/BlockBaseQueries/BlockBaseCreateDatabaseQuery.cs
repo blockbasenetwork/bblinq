@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BlockBase.BBLinq.Builders;
+﻿using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Queries.Base;
+using System;
+using System.Collections.Generic;
 
 namespace BlockBase.BBLinq.Queries.BlockBaseQueries
 {

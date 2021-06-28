@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BlockBase.BBLinq.DataAnnotations;
+using BlockBase.BBLinq.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using BlockBase.BBLinq.DataAnnotations;
-using BlockBase.BBLinq.Exceptions;
 using RangeAttribute = BlockBase.BBLinq.DataAnnotations.RangeAttribute;
 
 namespace BlockBase.BBLinq.ExtensionMethods
@@ -223,6 +223,12 @@ namespace BlockBase.BBLinq.ExtensionMethods
         public static bool IsRequired(this PropertyInfo property)
         {
             var attribute = property.GetAttribute<RequiredAttribute>();
+            return attribute != null;
+        }
+
+        public static bool IsUnique(this PropertyInfo property)
+        {
+            var attribute = property.GetAttribute<UniqueAttribute>();
             return attribute != null;
         }
     }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
-using BlockBase.BBLinq.Enumerables;
-using BlockBase.BBLinq.Model.Base;
+﻿using BlockBase.BBLinq.Model.Base;
 using BlockBase.BBLinq.Model.Nodes;
+using System;
 
 namespace BlockBase.BBLinq.Exceptions
 {
@@ -30,7 +26,8 @@ namespace BlockBase.BBLinq.Exceptions
             return $"The comparison operation {@operator} between {leftValue} and {rightValue} is not valid!";
         }
 
-        internal InvalidComparisonExpressionException(string @operator, ExpressionNode left, ExpressionNode right):
-            base(GenerateMessage(@operator, left, right)) { }
+        internal InvalidComparisonExpressionException(string @operator, ExpressionNode left, ExpressionNode right) :
+            base(GenerateMessage(@operator, left, right))
+        { }
     }
 }

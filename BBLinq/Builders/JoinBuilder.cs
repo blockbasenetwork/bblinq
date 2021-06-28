@@ -1,8 +1,8 @@
-﻿using BlockBase.BBLinq.Model.Nodes;
+﻿using BlockBase.BBLinq.Enumerables;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Model.Nodes;
 using System;
 using System.Collections.Generic;
-using BlockBase.BBLinq.Enumerables;
-using BlockBase.BBLinq.ExtensionMethods;
 
 namespace BlockBase.BBLinq.Builders
 {
@@ -53,7 +53,7 @@ namespace BlockBase.BBLinq.Builders
             {
                 sortedEntities.Remove(currentEntity);
                 JoinNode join = null;
-                
+
 
                 foreach (var entity in sortedEntities)
                 {
@@ -64,7 +64,7 @@ namespace BlockBase.BBLinq.Builders
                         break;
                     }
                 }
-                if(join != null)
+                if (join != null)
                 {
                     joinList.Add(join);
                 }

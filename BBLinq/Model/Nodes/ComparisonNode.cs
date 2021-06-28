@@ -5,10 +5,16 @@ namespace BlockBase.BBLinq.Model.Nodes
 {
     internal class ComparisonNode : BinaryExpressionNode<BlockBaseComparisonOperator, ExpressionNode, ExpressionNode>
     {
-        public ComparisonNode(BlockBaseComparisonOperator @operator, PropertyNode leftNode, ValueNode rightNode)
-            : base(@operator, leftNode, rightNode) { }
+        public ComparisonNode(BlockBaseComparisonOperator @operator, PropertyNode leftNode, ValueNode rightNode,
+            bool isWrapped = false)
+            : base(@operator, leftNode, rightNode, isWrapped)
+        {
+        }
 
-        public ComparisonNode(BlockBaseComparisonOperator @operator, PropertyNode leftNode, PropertyNode rightNode)
-            : base(@operator, leftNode, rightNode) { }
+        public ComparisonNode(BlockBaseComparisonOperator @operator, PropertyNode leftNode, PropertyNode rightNode,
+            bool isWrapped = false)
+            : base(@operator, leftNode, rightNode, isWrapped)
+        {
+        }
     }
 }

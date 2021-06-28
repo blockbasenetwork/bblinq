@@ -1,5 +1,4 @@
-﻿using System;
-using BlockBase.BBLinq.Exceptions;
+﻿using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.Model.Nodes;
 
 namespace BlockBase.BBLinq.Validators
@@ -12,7 +11,7 @@ namespace BlockBase.BBLinq.Validators
             {
                 if (node.Right is ValueNode rightValue)
                 {
-                    if ((leftProperty.Property.PropertyType == rightValue.Value.GetType())|| (leftProperty.Property.PropertyType.IsEnum && rightValue.Value.GetType() == typeof(int)))
+                    if ((leftProperty.Property.PropertyType == rightValue.Value.GetType()) || (leftProperty.Property.PropertyType.IsEnum && rightValue.Value.GetType() == typeof(int)))
                     {
                         return;
                     }

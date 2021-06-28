@@ -1,9 +1,8 @@
-﻿using System;
-using System.Reflection;
-using BlockBase.BBLinq.Enumerables;
+﻿using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Nodes;
+using System;
 
 namespace BlockBase.BBLinq.Builders
 {
@@ -13,11 +12,11 @@ namespace BlockBase.BBLinq.Builders
         {
             var primaryKey = type.GetPrimaryKey();
             var primaryKeyOnObject = obj.GetType().GetProperty(primaryKey.Name);
-            if(primaryKeyOnObject == null || primaryKeyOnObject.PropertyType != primaryKey.PropertyType)
+            if (primaryKeyOnObject == null || primaryKeyOnObject.PropertyType != primaryKey.PropertyType)
             {
                 throw new NoPropertyFoundException(obj.GetType().ToString(), primaryKey.Name);
             }
-            
+
             var leftNode = new PropertyNode(primaryKey);
             var rightNode = new ValueNode(primaryKeyOnObject.GetValue(obj));
             return new ComparisonNode(BlockBaseComparisonOperator.EqualTo, leftNode, rightNode);
@@ -41,23 +40,6 @@ namespace BlockBase.BBLinq.Builders
         {
             return GenerateComparisonNodeOnObjectKey(obj.GetType(), obj);
         }
-
-        internal static ComparisonNode GenerateNotNode(PropertyInfo property)
-        {
-            return GenerateSinglePropertyNode(property, false);
-        }
-
-        internal static ComparisonNode GenerateSinglePropertyNode(PropertyInfo property, bool value = true)
-        {
-            if (property.PropertyType != typeof(bool))
-            {
-                throw new PropertyNotBooleanException(property);
-            }
-
-            return new ComparisonNode(BlockBaseComparisonOperator.EqualTo, new PropertyNode(property), new ValueNode(false));
-        }
-
-       
     }
 }
 

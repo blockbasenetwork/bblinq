@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.Exceptions;
 using BlockBase.BBLinq.Helpers;
@@ -8,6 +6,10 @@ using BlockBase.BBLinq.Parsers;
 using BlockBase.BBLinq.Queries.Interfaces;
 using BlockBase.BBLinq.QueryExecutors.Interfaces;
 using BlockBase.BBLinq.Settings.Base;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BlockBase.BBLinq.QueryExecutors
 {
@@ -22,52 +24,37 @@ namespace BlockBase.BBLinq.QueryExecutors
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
             var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
-            if (!parsedResult.Succeeded)
-            {
-                throw new QueryExecutionException(parsedResult.Message);
-            }
-
-            foreach (var response in parsedResult.Responses)
-            {
-                var exception = "";
-                if (!response.Executed)
-                {
-                    exception += response.Message;
-                }
-                if (exception != "")
-                    throw new QueryExecutionException(exception);
-            }
         }
 
         public async Task ExecuteBatchQueryAsync(List<IQuery> queries, DatabaseSettings settings)
         {
+            var queryBuilder = new BlockBaseQueryBuilder();
             var queryString = "";
-            var useDatabase = true;
+            AddUseDatabase(queryBuilder, settings);
+            if (!queries.Any())
+            {
+                throw new Exception("No queries in batch");
+            }
             for (var queryIndex = 0; queryIndex < queries.Count; queryIndex++)
             {
-                queryString+=BuildQueryString(queries[queryIndex].GenerateQueryString(), settings, useDatabase);
-                if (queryIndex == 0)
-                {
-                    useDatabase = false;
-                }
+                queryString += BuildQueryString(queries[queryIndex].GenerateQueryString(), settings, false);
             }
 
-            //queryString = WrapQueryInTransaction(queryString);
+            queryString = WrapQueryInTransaction(queryString);
+            queryBuilder.Append(queryString);
+            queryString = queryBuilder.ToString();
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
-            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
+            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null, true);
             if (!parsedResult.Succeeded)
             {
                 throw new QueryExecutionException(parsedResult.Message);
             }
+        }
 
-            foreach (var response in parsedResult.Responses)
-            {
-                if (!response.Executed)
-                {
-                    throw new QueryExecutionException(response.Message);
-                }
-            }
+        private string WrapQueryInTransaction(string queryString)
+        {
+            return "Begin;" + queryString + "Commit;";
         }
 
         public async Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(ISelectQuery query, DatabaseSettings settings)
@@ -80,28 +67,7 @@ namespace BlockBase.BBLinq.QueryExecutors
             {
                 throw new QueryExecutionException(parsedResult.Message);
             }
-
-            if (parsedResult.Responses == null)
-            {
-
-            }
-            var result = new List<TResult>();
-            foreach (var response in parsedResult.Responses)
-            {
-                if (response == null) continue;
-                if (response.Content == null)
-                {
-                    if (!response.Executed)
-                    {
-                        throw new QueryExecutionException(parsedResult.Message);
-                    }
-                }
-                else
-                {
-                    result.AddRange(response?.Content);
-                }
-            }
-            return result;
+            return parsedResult.Result;
         }
 
         #endregion

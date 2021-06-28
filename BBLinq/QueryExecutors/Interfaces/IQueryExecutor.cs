@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlockBase.BBLinq.Queries.Interfaces;
+﻿using BlockBase.BBLinq.Queries.Interfaces;
 using BlockBase.BBLinq.Settings.Base;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlockBase.BBLinq.QueryExecutors.Interfaces
 {

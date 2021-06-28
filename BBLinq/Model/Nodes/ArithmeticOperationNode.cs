@@ -5,7 +5,7 @@ namespace BlockBase.BBLinq.Model.Nodes
 {
     internal class ArithmeticOperationExpressionNode : BinaryExpressionNode<BlockBaseArithmeticOperator, ValueNode, ValueNode>
     {
-        public ArithmeticOperationExpressionNode(BlockBaseArithmeticOperator @operator, ValueNode left, ValueNode right):base(@operator, left, right) { }
-        public ArithmeticOperationExpressionNode(BlockBaseArithmeticOperator @operator, object left, object right):base(@operator, new ValueNode(left), new ValueNode(right)) { }
+        public ArithmeticOperationExpressionNode(BlockBaseArithmeticOperator @operator, ValueNode left, ValueNode right, bool isWrapped = false) : base(@operator, left, right, isWrapped) { }
+        public ArithmeticOperationExpressionNode(BlockBaseArithmeticOperator @operator, object left, object right, bool isWrapped = false) : base(@operator, new ValueNode(left), new ValueNode(right), isWrapped) { }
     }
 }

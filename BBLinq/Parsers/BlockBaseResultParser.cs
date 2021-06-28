@@ -1,275 +1,139 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.ExtensionMethods;
-using BlockBase.BBLinq.Model.Database;
-using BlockBase.BBLinq.Model.Nodes;
 using BlockBase.BBLinq.Model.Responses;
 using BlockBase.BBLinq.Queries.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace BlockBase.BBLinq.Parsers
 {
+    internal class Response
+    {
+        [JsonProperty("response")]
+        public ResponseItem[] ResponseItems { get; set; }
+    }
+
+    internal class ResponseItem
+    {
+        [JsonProperty("columns")]
+        public string[] Columns { get; set; }
+
+        [JsonProperty("data")]
+        public string[][] Value { get; set; }
+    }
+
+
     internal class BlockBaseResultParser
     {
-        public RequestResult<TResult> Parse<TResult>(string result, ISelectQuery query)
+        public RequestResult<TResult> Parse<TResult>(string result, ISelectQuery query, bool isBatch = false)
         {
-            var parsedResult = JsonConvert.DeserializeObject<RequestResult<TResult>>(result);
-            if (!parsedResult.Succeeded)
+            var parsedResult = JsonConvert.DeserializeObject<Response>(result);
+            NotifyIfRequestFailed(parsedResult);
+            if (isBatch && parsedResult.ResponseItems.Length == 1)
             {
-                return parsedResult;
+                throw new Exception("A batch operation was not recognized or failed");
             }
-
-            var responses = JsonConvert.DeserializeObject<JObject>(result)["response"] as JArray;
-            foreach (var response in responses)
+            if (query == null)
             {
-                var columns = JsonConvert.DeserializeObject<string[]>(response["columns"].ToString());
-                var data = JsonConvert.DeserializeObject<string[][]>(response["data"].ToString());
-                var operationExecution = ParseOperationExecutionResult<TResult>(columns, data);
-                if (operationExecution != null)
-                {
-                    parsedResult.Responses.Add(operationExecution);
-                }
-                else
-                {
-                    var rowsFetchResult = ParseRows<TResult>(columns, data, query);
-                    if (rowsFetchResult != null)
-                    {
-                        parsedResult.Responses.Add(rowsFetchResult);
-                    }
-                }
-
+                return new RequestResult<TResult>() {Succeeded = true};
             }
-
-            return parsedResult;
+            var properties = GenerateMapperProperties(query, parsedResult.ResponseItems[1].Columns);
+            var rows = GetRows(parsedResult).First();
+            var parsedRows = ParseRows(rows, properties);
+            var executionResult = ExecuteMapper<TResult>(query.Mapping, parsedRows);
+            return new RequestResult<TResult>() {Result = executionResult, Succeeded = true};
         }
 
-        private object[] CreateArgumentListForExpression(object[] objects, IReadOnlyCollection<ParameterExpression> @params)
+        public IEnumerable<TResult> ExecuteMapper<TResult>(LambdaExpression expression, IEnumerable<IEnumerable<object>> parsedRows)
         {
-            var parameterList = new List<object>();
-            foreach(var @param in @params)
+            if (expression == null)
             {
-                var added = false;
-                for (var objectCounter = 0; objectCounter < objects.Length; objectCounter++)
+                var result = new List<TResult>();
+                foreach (var row in parsedRows)
                 {
-                    if (objects[objectCounter]!= null && objects[objectCounter].GetType() == @param.Type)
-                    {
-                        parameterList.Add(objects[objectCounter]);
-                        objects[objectCounter] = null;
-                        added = true;
-                    }
+                    result.Add((TResult)row.FirstOrDefault(x => x.GetType() == typeof(TResult)));
                 }
-
-                if (!added)
-                {
-                    parameterList.Add(Activator.CreateInstance(@param.Type));
-                }
+                return result;
             }
-
-            return parameterList.ToArray();
-        }
-
-        public ExecutionResult<TResult> ParseRows<TResult>(string[] columns, string[][] data, ISelectQuery query)
-        {
+            var mapping = expression.Compile();
             var resultList = new List<TResult>();
-            BlockBaseColumn[] rowColumns = 
-                query.Mapping != null? GetResultColumns(columns, query):
-                query.ReturnType != null?
-                    GetResultColumns(columns, query.ReturnType) :
-                GetResultColumns(columns, query.Joins);
-            Delegate queryExpression = null;
-            if (query.Mapping != null)
+            foreach (var parsedRow in parsedRows)
             {
-                queryExpression = (query.Mapping).Compile();
+                var orderedArguments = OrderArguments(expression.Parameters, parsedRow);
+                var result = mapping.DynamicInvoke(orderedArguments.ToArray());
+                resultList.Add((TResult)result);
             }
-            foreach (var row in data)
+            return resultList;
+        }
+
+        public IEnumerable<object> OrderArguments(IReadOnlyCollection<ParameterExpression> parameters, IEnumerable<object> arguments)
+        {
+            var list = new List<object>();
+            foreach (var parameter in parameters)
             {
-                var rowObjects = ParseRow(rowColumns, row);
-                if (queryExpression != null)
+                list.Add(arguments.FirstOrDefault(x => x.GetType() == parameter.Type));
+            }
+            return list;
+        }
+
+        public IEnumerable<IEnumerable<object>> ParseRows(ResponseItem response, IEnumerable<(string, PropertyInfo)> properties)
+        {
+            var result = new List<IEnumerable<object>>();
+            var propertyIndexes = GetPropertyIndexes(response.Columns, properties).ToArray();
+            var propertyArray = properties.ToArray();
+            foreach (var row in response.Value)
+            {
+                var arguments = new List<object>();
+                for(var propertyCounter = 0 ; propertyCounter< properties.Count(); propertyCounter++)
                 {
-                    rowObjects = CreateArgumentListForExpression(rowObjects, query.Mapping.Parameters);
-                    resultList.Add((TResult)queryExpression.DynamicInvoke(rowObjects));
-                }
-                else
-                {
-                    if (rowObjects.Length == 1)
+                    var property = propertyArray[propertyCounter].Item2;
+                    var propertyType = property.ReflectedType;
+                    var index = propertyIndexes[propertyCounter];
+                    var rowData = row[index];
+                    var parsedValue = ParseValue(rowData, property);
+                    var obj = arguments.FirstOrDefault(x => x.GetType() == propertyType);
+                    if (obj == null)
                     {
-                        resultList.Add((TResult)rowObjects[0]);
+                        obj = Activator.CreateInstance(propertyType);
+                        arguments.Add(obj);
                     }
-                    else
-                    {
-                        var expando = new Dictionary<string, object>();
-                        foreach (var rowObject in rowObjects)
-                        {
-                            foreach (var property in rowObject.GetType().GetProperties())
-                            {
-                                var propertyName = rowObject.GetType().GetTableName() + property.GetColumnName();
-                                expando.Add(propertyName, property.GetValue(rowObject));
-                            }
-                        }
-                        resultList.Add((dynamic) expando);
-                    }
+                    property.SetValue(obj, parsedValue);
                 }
-            }
-            return new ExecutionResult<TResult>() {Content = resultList};
-        }
-
-        public dynamic CombineRowObjects(dynamic[] rowObjects)
-        {
-            var result = new ExpandoObject(); 
-            foreach (var rowObject in rowObjects)
-            {
-                var dict = (IDictionary<string, object>)rowObject;
-                var d = result as IDictionary<string, object>;
-                foreach (var pair in dict.Concat(result))
-                {
-                    d[pair.Key] = pair.Value;
-                }
-            }
-
-            return result;
-        }
-
-        public object[] ParseRow(BlockBaseColumn[] columns, string[] data)
-        {
-            var result = new List<object>();
-            for (var columnIndex = 0; columnIndex < columns.Length; columnIndex++)
-            {
-                if (columnIndex == 17)
-                {
-
-                }
-                var property = columns[columnIndex].Property;
-                var rawValue = data[columnIndex];
-                var value = ParseValue(property, rawValue);
-                object currentObject = null;
-                foreach (var resultObject in result)
-                {
-                    if (resultObject.GetType() == property.ReflectedType)
-                    {
-                        currentObject = resultObject;
-                    }
-                }
-
-                if (currentObject == null && property.ReflectedType != null)
-                {
-                    currentObject = Activator.CreateInstance(property.ReflectedType);
-                    result.Add(currentObject);
-                }
-                property.SetValue(currentObject, value);
-            }
-            return result.ToArray();
-        }
-
-        public BlockBaseColumn[] GetResultColumns(string[] columns, JoinNode[] joins)
-        {
-            var joinTypes = JoinBuilder.DrawTypesFromJoinNodes(joins);
-            var selectedColumns = new List<BlockBaseColumn>();
-            var properties = new List<PropertyInfo>();
-            foreach (var joinType in joinTypes)
-            {
-                properties.AddRange(joinType.GetProperties());
-            }
-            foreach (var column in columns)
-            {
-                foreach (var property in properties)
-                {
-                    if (property.ReflectedType.GetTableName() + "." + property.GetColumnName() == column)
-                    {
-                        selectedColumns.Add(BlockBaseColumn.From(property));
-                    }
-                }
-            }
-            return selectedColumns.ToArray();
-        }
-
-        public BlockBaseColumn[] GetResultColumns(string[] columns, Type type)
-        {
-            var selectedColumns = new List<BlockBaseColumn>();
-            var tableName = type.GetTableName();
-            foreach (var column in columns)
-            {
-                foreach (var property in type.GetProperties())
-                {
-                    if (tableName + "." + property.GetColumnName() == column)
-                    {
-                        selectedColumns.Add(BlockBaseColumn.From(property));
-                    }
-                }
-            }
-            return selectedColumns.ToArray();
-        }
-
-        public BlockBaseColumn[] GetResultColumns(string[] columns, ISelectQuery query)
-        {
-            var selectedColumns = new List<BlockBaseColumn>();
-            foreach (var column in columns)
-            {
-                foreach (var property in query.SelectProperties)
-                {
-                    if (property.Table + "." + property.Name == column)
-                    {
-                        selectedColumns.Add(property);
-                    }
-                }
-            }
-            return selectedColumns.ToArray();
-        }
-
-        public ExecutionResult<TResult> ParseOperationExecutionResult<TResult>(string[] columns, string[][] data)
-        {
-            var executedIndex = Array.IndexOf(columns, "Executed");
-            var messageIndex = Array.IndexOf(columns, "Message");
-            if (executedIndex != -1 && messageIndex != -1)
-            {
-                return new ExecutionResult<TResult>
-                {
-                    Executed = data[0][executedIndex] == "True",
-                    Message = data[0][messageIndex]
-                };
-            }
-            return null;
-        }
-
-        public TResult ParseRow<TResult>(Dictionary<string, PropertyInfo> propertiesOnRow, Dictionary<string, string> dataOnRow) where TResult:new()
-        {
-            var result = new TResult();
-            foreach (var property in propertiesOnRow)
-            {
-                var propertyInfo = property.Value;
-                var value = dataOnRow[property.Key];
-                var parsedValue = ParseValue(propertyInfo, value);
-                propertyInfo.SetValue(result, parsedValue);
+                result.Add(arguments);
             }
             return result;
         }
 
-        private object ParseValue(PropertyInfo property, string value)
+        private static IEnumerable<int> GetPropertyIndexes(string[] columns, IEnumerable<(string, PropertyInfo)> properties)
+        {
+            return properties.Select(property => Array.IndexOf(columns, property.Item1)).ToArray();
+        }
+
+
+        public object ParseValue(string value, PropertyInfo property)
         {
             var currentType = property.PropertyType;
             var propType = Nullable.GetUnderlyingType(currentType) ?? currentType;
-            if (value == "" && property.IsNullable())
+            if (value == null && property.IsNullable())
             {
                 return null;
             }
+            if (value == null)
+            {
+                return default;
+            }
+
             if (propType == typeof(Guid))
             {
-                return string.IsNullOrEmpty(value)? Guid.Empty: Guid.Parse(value);
+                return string.IsNullOrEmpty(value) ? Guid.Empty : Guid.Parse(value);
             }
 
             if (propType == typeof(DateTime) && property.IsComparableDate())
             {
-                if (value == "")
-                {
-                    return null;
-                }
                 var timestamp = int.Parse(value);
                 var date = new DateTime();
                 date.FromUnixTimestamp(timestamp);
@@ -285,12 +149,76 @@ namespace BlockBase.BBLinq.Parsers
                 var res = Enum.ToObject(propType, index);
                 return res;
             }
-            if (value != string.Empty)
+
+            if (propType == typeof(string))
+            {
+                value = value?.Replace("`", "'");
+            }
+
+            try
             {
                 return Convert.ChangeType(value, propType, CultureInfo.InvariantCulture);
             }
+            catch (Exception)
+            {
+                return Activator.CreateInstance(propType);
+            }
+        }
 
-            return null;
+        public IEnumerable<ResponseItem> GetRows(Response response)
+        {
+            return response.ResponseItems.Where(x => x.Columns[0] != "Executed");
+        }
+
+        public void NotifyIfRequestFailed(Response response)
+        {
+            if (!response.ResponseItems.Any())
+            {
+                throw new Exception("No result provided");
+            }
+            foreach (var item in response.ResponseItems)
+            {
+                if (item.Columns[0] == "Executed")
+                {
+                    if (item.Value[0][0] == "False")
+                    {
+                        throw new Exception(item.Value[0][1]);
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<(string, PropertyInfo)> GenerateMapperProperties(ISelectQuery query, string[] columnNames)
+        {
+            if (query.Mapping == null)
+            {
+                return ParseColumns(columnNames, new []{query.ReturnType});
+            }
+            var arguments = query.Mapping.Parameters.Select(x => x.Type);
+            return ParseColumns(columnNames, arguments);
+        }
+
+
+        public (string, PropertyInfo)[] ParseColumns(string[] columnNames, IEnumerable<Type> arguments)
+        {
+            var argumentNames = arguments.Select(x => (x, x.GetTableName())).ToList();
+            var columns = columnNames.Select(x => x.Split(".")).GroupBy(x => x[0]);
+            var properties = new List<(string, PropertyInfo)>();
+            foreach (var table in columns)
+            {
+                var type = argumentNames.FirstOrDefault(x => x.Item2 == table.Key);
+                if (type.x == null)
+                {
+                    throw new Exception($"No table {table.Key} found");
+                }
+
+                var tableColumns = table.Select(x => x[1]);
+                var typeProperties = type.x.GetProperties().Select(x => tableColumns.Contains(x.GetColumnName())?x:null).Where(x => x!=null);
+                var propertyList =
+                    typeProperties.Select(x => (x.ReflectedType.GetTableName() + "." + x.GetColumnName(), x));
+                properties.AddRange(propertyList);
+            }
+            return properties.ToArray();
         }
     }
 }

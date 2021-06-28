@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BlockBase.BBLinq.Builders;
+﻿using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Queries.Base;
 using BlockBase.BBLinq.Queries.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BlockBase.BBLinq.Queries.BlockBaseQueries
 {
-    public class BlockBaseRecordInsertQuery:BlockBaseQuery, IInsertQuery
+    public class BlockBaseRecordInsertQuery : BlockBaseQuery, IInsertQuery
     {
         public Type EntityType { get; }
         public object[] Records { get; }

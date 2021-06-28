@@ -1,5 +1,4 @@
-﻿using BlockBase.BBLinq.Queries.Interfaces;
-using BlockBase.BBLinq.QueryExecutors;
+﻿using BlockBase.BBLinq.QueryExecutors;
 using BlockBase.BBLinq.Settings;
 
 namespace BlockBase.BBLinq.Sets.Base

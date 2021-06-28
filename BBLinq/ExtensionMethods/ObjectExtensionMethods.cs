@@ -21,13 +21,13 @@ namespace BlockBase.BBLinq.ExtensionMethods
 
         public static int ToUnixTimestamp(this DateTime date)
         {
-            return (int) (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return (int)(date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
         public static void FromUnixTimestamp(this ref DateTime date, int timestamp)
         {
             date = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
-            date=date.AddSeconds(timestamp);
+            date = date.AddSeconds(timestamp);
         }
 
     }

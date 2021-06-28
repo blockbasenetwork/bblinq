@@ -1,22 +1,31 @@
-﻿using System;
+﻿using BlockBase.BBLinq.Queries.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BlockBase.BBLinq.Queries.Interfaces;
 
 namespace BlockBase.BBLinq.Sets.Interfaces
 {
     public interface IQueryableJoinSet<TA, TB>
     {
         public IQueryableJoinSet<TA, TB> Where(Expression<Func<TA, TB, bool>> predicate);
-        
+
         public ISelectQuery GetSelectQuery();
         public void BatchSelect();
         public Task<IEnumerable<dynamic>> SelectAsync();
 
+        public Task<dynamic> FirstOrDefault();
+        public Task<dynamic> SingleOrDefault();
+        public Task<int> Count();
+
+
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
+
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC>>
@@ -30,6 +39,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC, TD> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD>>
@@ -45,6 +57,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC,TD, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE>>
@@ -60,6 +75,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF>>
@@ -75,6 +93,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG>>
@@ -90,6 +111,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH>>
     {
@@ -104,6 +128,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TRecordResult>> mapper);
     }
 
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI>>
@@ -119,6 +146,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ>>
     {
@@ -133,6 +163,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK>>
     {
@@ -147,6 +180,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL>>
     {
@@ -161,6 +197,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM>>
     {
@@ -175,6 +214,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN>>
     {
@@ -189,6 +231,10 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
+
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TRecordResult>> mapper);
     }
     public interface IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO> : IBlockBaseBaseSet<IQueryableJoinSet<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO>>
     {
@@ -203,6 +249,9 @@ namespace BlockBase.BBLinq.Sets.Interfaces
         public ISelectQuery GetSelectQuery<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
         public void BatchSelect<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
         public Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
+        public Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
+        public Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
+        public Task<int> Count<TRecordResult>(Expression<Func<TA, TB, TC, TD, TE, TF, TG, TH, TI, TJ, TK, TL, TM, TN, TO, TRecordResult>> mapper);
     }
 
 }

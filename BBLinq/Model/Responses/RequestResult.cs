@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BlockBase.BBLinq.Model.Responses
 {
@@ -18,6 +18,6 @@ namespace BlockBase.BBLinq.Model.Responses
     internal class RequestResult<T> : RequestResultBase
     {
         [JsonIgnore]
-        public List<ExecutionResult<T>> Responses { get; set; } = new List<ExecutionResult<T>>();
+        public IEnumerable<T> Result { get; set; }
     }
 }

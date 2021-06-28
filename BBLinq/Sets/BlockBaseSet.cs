@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using BlockBase.BBLinq.Builders;
+﻿using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Database;
@@ -15,6 +10,11 @@ using BlockBase.BBLinq.QueryExecutors;
 using BlockBase.BBLinq.Sets.Base;
 using BlockBase.BBLinq.Sets.Interfaces;
 using BlockBase.BBLinq.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace BlockBase.BBLinq.Sets
 {
@@ -153,7 +153,7 @@ namespace BlockBase.BBLinq.Sets
             var condition = _predicate != null ? (new BlockBaseExpressionParser()).Parse(_predicate) : NodeBuilder.GenerateComparisonNodeOnObjectKey(typeof(T), record);
             return new BlockBaseRecordUpdateQuery(typeof(T), record, condition, _encryptQuery);
         }
-        
+
 
         public async Task UpdateAsync(object record)
         {
@@ -181,6 +181,21 @@ namespace BlockBase.BBLinq.Sets
             _batchQueries.Add(query);
         }
 
+        public async Task<T> FirstOrDefault()
+        {
+            return (await SelectAsync()).FirstOrDefault();
+        }
+
+        public async Task<T> SingleOrDefault()
+        {
+            return (await SelectAsync()).SingleOrDefault();
+        }
+
+        public async Task<int> Count()
+        {
+            return (await SelectAsync()).Count();
+        }
+
         public async Task<IEnumerable<T>> SelectAsync()
         {
             var query = GetSelectQuery();
@@ -205,6 +220,21 @@ namespace BlockBase.BBLinq.Sets
         {
             var query = GetSelectQuery(mapper);
             _batchQueries.Add(query);
+        }
+
+        public async Task<TRecordResult> FirstOrDefault<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
+        {
+            return (await SelectAsync(mapper)).FirstOrDefault();
+        }
+
+        public async Task<TRecordResult> SingleOrDefault<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
+        {
+            return (await SelectAsync(mapper)).SingleOrDefault();
+        }
+
+        public async Task<int> Count<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)
+        {
+            return (await SelectAsync(mapper)).Count();
         }
 
         public async Task<IEnumerable<TRecordResult>> SelectAsync<TRecordResult>(Expression<Func<T, TRecordResult>> mapper)

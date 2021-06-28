@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BlockBase.BBLinq.Contexts.Base;
+﻿using BlockBase.BBLinq.Contexts.Base;
 using BlockBase.BBLinq.Queries.BlockBaseQueries;
 using BlockBase.BBLinq.Queries.Interfaces;
 using BlockBase.BBLinq.QueryExecutors;
 using BlockBase.BBLinq.Sets;
 using BlockBase.BBLinq.Settings;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BlockBase.BBLinq.Contexts
 {
     public abstract class BlockBaseContext : DatabaseContext<BlockBaseSettings, BlockBaseQueryExecutor>
     {
-        protected BlockBaseContext(BlockBaseSettings settings):base(settings, new BlockBaseQueryExecutor(), new List<IQuery>())
+        protected BlockBaseContext(BlockBaseSettings settings) : base(settings, new BlockBaseQueryExecutor(), new List<IQuery>())
         {
         }
 
@@ -27,8 +27,8 @@ namespace BlockBase.BBLinq.Contexts
             var databaseName = Settings.DatabaseName;
             var tables =
                 (from set in sets
-                    where (set.PropertyType.GetInterface("ISet") != null)
-                    select set.PropertyType.GetGenericArguments()[0]).ToArray();
+                 where (set.PropertyType.GetInterface("ISet") != null)
+                 select set.PropertyType.GetGenericArguments()[0]).ToArray();
 
             var query = new BlockBaseCreateDatabaseQuery(databaseName, tables);
             QueryExecutor.UseDatabase = false;

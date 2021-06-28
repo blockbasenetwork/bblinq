@@ -22,7 +22,7 @@ namespace BlockBase.BBLinq.Builders.Base
         public T Clear()
         {
             Content = string.Empty;
-            return (T) this;
+            return (T)this;
         }
 
         public override string ToString()

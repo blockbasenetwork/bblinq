@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BlockBase.BBLinq.DataAnnotations.Base;
+﻿using BlockBase.BBLinq.DataAnnotations.Base;
+using System;
 
 namespace BlockBase.BBLinq.DataAnnotations
 {

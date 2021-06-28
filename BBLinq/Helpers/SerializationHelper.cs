@@ -6,7 +6,7 @@ namespace BlockBase.BBLinq.Helpers
 {
     public class SerializationHelper
     {
-      
+
         /// <summary>
         /// Combines multiple arrays into one
         /// </summary>

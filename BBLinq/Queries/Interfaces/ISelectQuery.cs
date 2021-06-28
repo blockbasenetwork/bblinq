@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq.Expressions;
-using BlockBase.BBLinq.Model.Base;
-using BlockBase.BBLinq.Model.Database;
+﻿using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Model.Nodes;
+using System;
+using System.Linq.Expressions;
 
 namespace BlockBase.BBLinq.Queries.Interfaces
 {

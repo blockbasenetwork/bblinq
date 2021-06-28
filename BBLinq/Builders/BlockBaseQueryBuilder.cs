@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using BlockBase.BBLinq.Builders.Base;
+﻿using BlockBase.BBLinq.Builders.Base;
 using BlockBase.BBLinq.Dictionaries;
 using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Base;
 using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Model.Nodes;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Builders
 {
@@ -25,6 +25,11 @@ namespace BlockBase.BBLinq.Builders
         public BlockBaseQueryBuilder Use()
         {
             return Append(Dictionary.Use);
+        }
+
+        public BlockBaseQueryBuilder Unique()
+        {
+            return Append(Dictionary.Unique);
         }
 
         public BlockBaseQueryBuilder Create()
@@ -292,6 +297,10 @@ namespace BlockBase.BBLinq.Builders
 
         public object TransformSpecialValue(object value, BlockBaseColumn column)
         {
+            if (value is DateTime timet && timet.Ticks == default(DateTime).Ticks || value is int intVal && intVal== int.MinValue)
+            {
+                return null;
+            }
             return value is DateTime time && column.IsComparableDate ? time.ToUnixTimestamp() : value;
         }
 
@@ -318,7 +327,7 @@ namespace BlockBase.BBLinq.Builders
                     }
                 }
                 WrapListRight();
-                if (rowCounter != values.Length-1)
+                if (rowCounter != values.Length - 1)
                 {
                     ListSeparator().WhiteSpace();
                 }
@@ -369,7 +378,7 @@ namespace BlockBase.BBLinq.Builders
         public BlockBaseQueryBuilder SelectRecord(BlockBaseColumn[] columns, JoinNode[] joins, ExpressionNode condition,
             int? limit, int? offset, bool isEncrypted)
         {
-            if (columns.Length == 0 && joins.Length > 0)
+            if (columns == null || columns.Length == 0 && joins.Length > 0)
             {
                 var newColumns = new List<BlockBaseColumn>();
                 foreach (var join in joins)
@@ -391,18 +400,18 @@ namespace BlockBase.BBLinq.Builders
                 {
                     From().WhiteSpace().Table(join.Left.Property);
                 }
-                if(join.Right.Property != null)
+                if (join.Right.Property != null)
                 {
                     ParseJoinNode(join);
                 }
             }
             Where(condition);
             Limit(limit, offset);
-			if(isEncrypted)Encrypted();
+            if (isEncrypted) Encrypted();
             return End();
         }
 
-    #endregion
+        #endregion
 
         #endregion
 
@@ -429,7 +438,7 @@ namespace BlockBase.BBLinq.Builders
             for (var columnCounter = 0; columnCounter < columns.Length; columnCounter++)
             {
                 actionOnColumn(columns[columnCounter]);
-                if (columnCounter != columns.Length-1)
+                if (columnCounter != columns.Length - 1)
                 {
                     ListSeparator().WhiteSpace();
                 }
@@ -475,6 +484,11 @@ namespace BlockBase.BBLinq.Builders
                 Append(column.DataType.ToString());
             }
 
+            if (column.IsUnique)
+            {
+                WhiteSpace().Unique();
+            }
+
             if (column.IsRequired && !column.IsPrimaryKey)
             {
                 WhiteSpace().NotNull();
@@ -490,7 +504,6 @@ namespace BlockBase.BBLinq.Builders
                 WhiteSpace().References().WhiteSpace().Append(column.ParentTableName).WrapListLeft()
                     .Append(column.ParentTableKeyName).WrapListRight();
             }
-
             return this;
         }
 
@@ -508,6 +521,7 @@ namespace BlockBase.BBLinq.Builders
 
         private BlockBaseQueryBuilder ParseNode(ExpressionNode node)
         {
+
             return node switch
             {
                 LogicNode logicNode => ParseLogicNode(logicNode),
@@ -521,21 +535,41 @@ namespace BlockBase.BBLinq.Builders
 
         private BlockBaseQueryBuilder ParseLogicNode(LogicNode node)
         {
+            if (node.IsWrapped)
+            {
+                WrapListLeft();
+            }
             ParseNode(node.Left).WhiteSpace()
                 .ParseOperator(node.Operator).WhiteSpace()
                 .ParseNode(node.Right);
+            if (node.IsWrapped)
+            {
+                WrapListRight();
+            }
             return this;
         }
 
         private BlockBaseQueryBuilder ParseComparisonNode(ComparisonNode node)
         {
+            if (node.IsWrapped)
+            {
+                WrapListLeft();
+            }
             if (node.Left is PropertyNode propertyNode && node.Right is ValueNode valueNode)
             {
+                if (valueNode.Value == null)
+                {
+                    return ParseNode(node.Left).WhiteSpace().Append("IS NULL");
+                }
                 node.Right = ConvertValueNodeToMatchDatabaseType(propertyNode, valueNode);
             }
             ParseNode(node.Left).WhiteSpace()
                 .ParseOperator(node.Operator)
                 .ParseNode(node.Right);
+            if (node.IsWrapped)
+            {
+                WrapListRight();
+            }
             return this;
         }
 
@@ -552,11 +586,11 @@ namespace BlockBase.BBLinq.Builders
         private BlockBaseQueryBuilder ParseJoinNode(JoinNode node)
         {
             var rightTable = node.Right.Property.ReflectedType.GetTableName();
-                WhiteSpace().Join(node.Type).WhiteSpace().Append(rightTable)
-                .WhiteSpace().On().WhiteSpace()
-                .ParsePropertyNode(node.Left).WhiteSpace()
-                .EqualTo().WhiteSpace()
-                .ParsePropertyNode(node.Right);
+            WhiteSpace().Join(node.Type).WhiteSpace().Append(rightTable)
+            .WhiteSpace().On().WhiteSpace()
+            .ParsePropertyNode(node.Left).WhiteSpace()
+            .EqualTo().WhiteSpace()
+            .ParsePropertyNode(node.Right);
             return this;
         }
 
@@ -616,12 +650,17 @@ namespace BlockBase.BBLinq.Builders
 
         public BlockBaseQueryBuilder WrapValue(object value)
         {
+            if (value is string sValue)
+            {
+               value = sValue.Replace("'", "`");
+            }
             if (value is Enum enumValue)
             {
                 value = Convert.ChangeType(enumValue, enumValue.GetTypeCode());
             }
             switch (value)
             {
+
                 case null:
                     return Append(Dictionary.NullValue);
                 case Guid guid when guid == Guid.Empty:
@@ -629,7 +668,7 @@ namespace BlockBase.BBLinq.Builders
                 case DateTime dtValue:
                     value = dtValue.ToString(CultureInfo.InvariantCulture);
                     break;
-				case float fValue:
+                case float fValue:
                     return Append(fValue.ToString(CultureInfo.InvariantCulture));
                 case decimal dValue:
                     return Append(dValue.ToString(CultureInfo.InvariantCulture));

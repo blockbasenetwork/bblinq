@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using BlockBase.BBLinq.Enumerables;
+﻿using BlockBase.BBLinq.Enumerables;
 using BlockBase.BBLinq.ExtensionMethods;
 using BlockBase.BBLinq.Model.Base;
+using System.Reflection;
 
 namespace BlockBase.BBLinq.Model.Database
 {
@@ -11,6 +11,7 @@ namespace BlockBase.BBLinq.Model.Database
         public bool IsColumnDecrypted { get; set; }
         public bool IsValueEncrypted { get; set; }
         public bool IsComparableDate { get; set; }
+        public bool IsUnique { get; set; }
         public int BucketCount { get; set; }
         public bool IsRange { get; set; }
         public int RangeMinimum { get; set; }
@@ -29,6 +30,7 @@ namespace BlockBase.BBLinq.Model.Database
                 IsColumnDecrypted = property.IsDecryptedColumn(),
                 IsComparableDate = property.IsComparableDate(),
                 IsValueEncrypted = property.IsEncryptedValue(),
+                IsUnique = property.IsUnique(),
                 IsRange = property.IsRange(),
                 IsForeignKey = property.IsForeignKey(),
                 IsRequired = property.IsRequired(),
@@ -59,8 +61,8 @@ namespace BlockBase.BBLinq.Model.Database
 
             }
 
-            column.DataType = column.IsValueEncrypted ? BlockBaseDataTypeEnum.Encrypted : 
-                            column.IsComparableDate? BlockBaseDataTypeEnum.Int:
+            column.DataType = column.IsValueEncrypted ? BlockBaseDataTypeEnum.Encrypted :
+                            column.IsComparableDate ? BlockBaseDataTypeEnum.Int :
                         propertyType.ToBbSqlType();
             return column;
         }

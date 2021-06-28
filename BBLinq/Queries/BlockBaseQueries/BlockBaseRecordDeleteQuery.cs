@@ -4,7 +4,7 @@ using BlockBase.BBLinq.Queries.Base;
 
 namespace BlockBase.BBLinq.Queries.BlockBaseQueries
 {
-    public class BlockBaseRecordDeleteQuery:BlockBaseQuery, IDeleteDatabaseQuery
+    public class BlockBaseRecordDeleteQuery : BlockBaseQuery, IDeleteDatabaseQuery
     {
         public string DatabaseName { get; }
         internal ExpressionNode Condition { get; }

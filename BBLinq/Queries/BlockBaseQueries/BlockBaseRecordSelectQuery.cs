@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq.Expressions;
-using BlockBase.BBLinq.Builders;
+﻿using BlockBase.BBLinq.Builders;
 using BlockBase.BBLinq.Model.Base;
 using BlockBase.BBLinq.Model.Database;
 using BlockBase.BBLinq.Model.Nodes;
 using BlockBase.BBLinq.Queries.Base;
 using BlockBase.BBLinq.Queries.Interfaces;
+using System;
+using System.Linq.Expressions;
 
 namespace BlockBase.BBLinq.Queries.BlockBaseQueries
 {
@@ -14,7 +14,7 @@ namespace BlockBase.BBLinq.Queries.BlockBaseQueries
         private BlockBaseColumn[] _selectProperties;
         private JoinNode[] _joins;
 
-        internal BlockBaseRecordSelectQuery(Type returnType, LambdaExpression mapping, BlockBaseColumn[] selectedProperties, JoinNode[] joins, ExpressionNode condition, int? limit, int? offset,  bool isEncrypted) : base(isEncrypted)
+        internal BlockBaseRecordSelectQuery(Type returnType, LambdaExpression mapping, BlockBaseColumn[] selectedProperties, JoinNode[] joins, ExpressionNode condition, int? limit, int? offset, bool isEncrypted) : base(isEncrypted)
         {
             ReturnType = returnType;
             Mapping = mapping;

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using BlockBase.BBLinq.Queries.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlockBase.BBLinq.Queries.Interfaces;
 
 namespace BlockBase.BBLinq.Sets.Interfaces
 {

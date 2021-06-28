@@ -29,7 +29,7 @@ namespace BlockBase.BBLinq.Exceptions
             return message;
         }
 
-        public NoDependencyFoundInEntitiesException(PropertyInfo[] properties, Type[] entities):base(GenerateErrorMessage(properties, entities))
+        public NoDependencyFoundInEntitiesException(PropertyInfo[] properties, Type[] entities) : base(GenerateErrorMessage(properties, entities))
         {
 
         }

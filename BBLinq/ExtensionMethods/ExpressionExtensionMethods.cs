@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -106,11 +105,11 @@ namespace BlockBase.BBLinq.Exceptions
 
         public static bool IsUnacceptedLogic(this Expression expression)
         {
-            return 
+            return
                    expression.NodeType == ExpressionType.Coalesce ||
                    expression.NodeType == ExpressionType.ExclusiveOr;
         }
-        
+
         public static bool IsAcceptedComparison(this Expression expression)
         {
             return expression.NodeType == ExpressionType.Equal ||
@@ -174,14 +173,14 @@ namespace BlockBase.BBLinq.Exceptions
                 case ConstantExpression constantExpression:
                     return GetValue(constantExpression.Value, expression.Member);
                 case MemberExpression innerMemberExpression:
-                {
-                    var value = GetValue(innerMemberExpression);
-                    if (value != null)
                     {
-                        return GetValue(value, expression.Member);
+                        var value = GetValue(innerMemberExpression);
+                        if (value != null)
+                        {
+                            return GetValue(value, expression.Member);
+                        }
+                        break;
                     }
-                    break;
-                }
             }
             return null;
         }

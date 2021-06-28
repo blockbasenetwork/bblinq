@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Cryptography.ECDSA;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace BlockBase.BBLinq.Helpers
 {
@@ -28,10 +27,10 @@ namespace BlockBase.BBLinq.Helpers
                 signer.BlockUpdate(hash, 0, hash.Length);
                 var sigBytes = signer.GenerateSignature();
 
-                var check = new List<byte[]>() {sigBytes, KeyTypeBytes};
+                var check = new List<byte[]>() { sigBytes, KeyTypeBytes };
                 var checksum = Ripemd160Manager.GetHash(SerializationHelper.Combine(check)).Take(ChecksumLength)
                     .ToArray();
-                var signAndChecksum = new List<byte[]>() {sigBytes, checksum};
+                var signAndChecksum = new List<byte[]>() { sigBytes, checksum };
                 var finalSig = SigPrefix + Base58.Encode(SerializationHelper.Combine(signAndChecksum));
 
                 return finalSig;

@@ -1,19 +1,19 @@
-﻿using BlockBase.BBLinq.Queries.Base;
+﻿using BlockBase.BBLinq.Builders;
+using BlockBase.BBLinq.ExtensionMethods;
+using BlockBase.BBLinq.Model.Base;
+using BlockBase.BBLinq.Model.Database;
+using BlockBase.BBLinq.Queries.Base;
+using BlockBase.BBLinq.Queries.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BlockBase.BBLinq.Builders;
-using BlockBase.BBLinq.ExtensionMethods;
-using BlockBase.BBLinq.Model.Base;
-using BlockBase.BBLinq.Model.Database;
-using BlockBase.BBLinq.Queries.Interfaces;
 
 namespace BlockBase.BBLinq.Queries.BlockBaseQueries
 {
     public class BlockBaseRecordUpdateQuery : BlockBaseQuery, IUpdateQuery
     {
-        internal BlockBaseRecordUpdateQuery(Type entityType, object record, ExpressionNode condition, bool isEncrypted) :base(isEncrypted)
+        internal BlockBaseRecordUpdateQuery(Type entityType, object record, ExpressionNode condition, bool isEncrypted) : base(isEncrypted)
         {
             EntityType = entityType;
             Record = record;
@@ -43,7 +43,7 @@ namespace BlockBase.BBLinq.Queries.BlockBaseQueries
         {
             var properties = new List<PropertyInfo>();
 
-            if(EntityType == Record.GetType())
+            if (EntityType == Record.GetType())
             {
                 properties.AddRange(GetFilteredProperties(EntityType, false));
             }

@@ -1,5 +1,5 @@
-﻿using System;
-using BlockBase.BBLinq.Model.Nodes;
+﻿using BlockBase.BBLinq.Model.Nodes;
+using System;
 
 namespace BlockBase.BBLinq.Exceptions
 {
@@ -22,7 +22,8 @@ namespace BlockBase.BBLinq.Exceptions
             return $"The logic operation {node.Operator} between {leftValue} and {rightValue} is not valid!";
         }
 
-        internal InvalidLogicExpressionException(LogicNode node):
-            base(GenerateMessage(node)) { }
+        internal InvalidLogicExpressionException(LogicNode node) :
+            base(GenerateMessage(node))
+        { }
     }
 }
