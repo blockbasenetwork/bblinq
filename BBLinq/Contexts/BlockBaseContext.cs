@@ -40,10 +40,10 @@ namespace BlockBase.BBLinq.Contexts
             BatchQueries.Add(query);
         }
 
-        public async Task ExecuteQueryBatchAsync()
+        public async Task ExecuteQueryBatchAsync(bool useTransaction = false)
         {
             QueryExecutor.UseDatabase = true;
-            await QueryExecutor.ExecuteBatchQueryAsync(BatchQueries, Settings);
+            await QueryExecutor.ExecuteBatchQueryAsync(BatchQueries, Settings, useTransaction);
         }
 
         /// <summary>

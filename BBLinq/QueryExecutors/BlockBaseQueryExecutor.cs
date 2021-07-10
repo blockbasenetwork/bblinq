@@ -23,10 +23,9 @@ namespace BlockBase.BBLinq.QueryExecutors
             var queryString = BuildQueryString(query.GenerateQueryString(), settings, true);
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
-            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
         }
 
-        public async Task ExecuteBatchQueryAsync(List<IQuery> queries, DatabaseSettings settings)
+        public async Task ExecuteBatchQueryAsync(List<IQuery> queries, DatabaseSettings settings, bool useTransaction)
         {
             var queryBuilder = new BlockBaseQueryBuilder();
             var queryString = "";
@@ -40,7 +39,10 @@ namespace BlockBase.BBLinq.QueryExecutors
                 queryString += BuildQueryString(queries[queryIndex].GenerateQueryString(), settings, false);
             }
 
-            queryString = WrapQueryInTransaction(queryString);
+            if (useTransaction)
+            {
+                queryString = WrapQueryInTransaction(queryString);
+            }
             queryBuilder.Append(queryString);
             queryString = queryBuilder.ToString();
             var requestBody = GenerateRequestBody(queryString, settings);

@@ -5,11 +5,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>BlockBase.BBLinq</AssemblyName>
     <RootNamespace>BlockBase.BBLinq</RootNamespace>
-    <Version>0.0.83</Version>
+    <Version>0.0.84</Version>
     <Copyright />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>0.0.83.0</AssemblyVersion>
+    <AssemblyVersion>0.0.84.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
