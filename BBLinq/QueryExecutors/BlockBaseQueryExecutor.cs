@@ -23,6 +23,11 @@ namespace BlockBase.BBLinq.QueryExecutors
             var queryString = BuildQueryString(query.GenerateQueryString(), settings, true);
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
+            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null, true);
+            if (!parsedResult.Succeeded)
+            {
+                throw new QueryExecutionException(parsedResult.Message);
+            }
         }
 
         public async Task ExecuteBatchQueryAsync(List<IQuery> queries, DatabaseSettings settings, bool useTransaction)
