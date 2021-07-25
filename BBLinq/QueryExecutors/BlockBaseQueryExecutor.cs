@@ -23,7 +23,7 @@ namespace BlockBase.BBLinq.QueryExecutors
             var queryString = BuildQueryString(query.GenerateQueryString(), settings, true);
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
-            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null, true);
+            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
             if (!parsedResult.Succeeded)
             {
                 throw new QueryExecutionException(parsedResult.Message);
@@ -52,7 +52,7 @@ namespace BlockBase.BBLinq.QueryExecutors
             queryString = queryBuilder.ToString();
             var requestBody = GenerateRequestBody(queryString, settings);
             var result = await CallRequest(settings, requestBody);
-            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null, true);
+            var parsedResult = (new BlockBaseResultParser()).Parse<string>(result, null);
             if (!parsedResult.Succeeded)
             {
                 throw new QueryExecutionException(parsedResult.Message);
@@ -61,7 +61,7 @@ namespace BlockBase.BBLinq.QueryExecutors
 
         private string WrapQueryInTransaction(string queryString)
         {
-            return "Begin;" + queryString + "Commit;";
+            return "Begin " + queryString + "Commit;";
         }
 
         public async Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(ISelectQuery query, DatabaseSettings settings)

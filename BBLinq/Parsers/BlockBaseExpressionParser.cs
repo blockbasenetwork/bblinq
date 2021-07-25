@@ -58,7 +58,7 @@ namespace BlockBase.BBLinq.Parsers
                 value = constantValue.Value;
             }
             else if (method.Name == "Contains")
-            { 
+            {
                 var valExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess || x.NodeType == ExpressionType.Constant && typeof(IEnumerable).IsAssignableFrom(x.Type) && x.Type != typeof(string));
                 var possibleValueExpression = expression.Arguments.FirstOrDefault(x => x.NodeType == ExpressionType.MemberAccess && (x.Type == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(x.Type)));
 
@@ -69,6 +69,17 @@ namespace BlockBase.BBLinq.Parsers
 
                 var property = ParseMemberExpression(possibleValueExpression as MemberExpression) as PropertyNode;
                 var possibleValues = ((IEnumerable)(valExpression as MemberExpression).GetValue());
+                if (possibleValues == null)
+                {
+                    var memberExpression = (MemberExpression)expression.Object;
+                    var getCallerExpression = Expression.Lambda<Func<object>>(memberExpression);
+                    var getCaller = getCallerExpression.Compile();
+                    var caller = getCaller();
+                    if (caller is IEnumerable enumerable)
+                    {
+                        possibleValues = enumerable;
+                    }
+                }
                 List<ComparisonNode> comparisonNodes = new List<ComparisonNode>();
                 foreach (var val in possibleValues)
                 {
